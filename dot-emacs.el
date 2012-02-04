@@ -11,9 +11,9 @@
 
 (require 'cl)
 
-(global-set-key "\C-x\C-m" 'execute-extended-command)
+;(global-set-key "\C-x\C-m" 'execute-extended-command) ;use chord xm
 
-(define-key global-map [f8] 'kill-region)
+;(define-key global-map [f8] 'kill-region) ;use chord fk
 (global-set-key "\C-w" 'backward-kill-word)
 
 ;; (define-key global-map [f9] 'switch-to-scratch)
@@ -118,6 +118,7 @@
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
  '(blink-cursor-mode nil)
+ '(bmkp-last-as-first-bookmark-file "~/.emacs.bmk")
  '(vc-follow-symlinks nil))
 
 (defun alt-colors-2 ()
@@ -144,7 +145,7 @@
 (alt-colors-1) 
 (dired emacs-root)
 (rename-buffer "dired1")
-(shell)
+;(shell)
 (find-file (concat emacs-root ".emacs"))
 
 ; ----------------------------------------
@@ -217,11 +218,14 @@
 ; w3m
 ; http://www.emacswiki.org/cgi-bin/emacs-en/emacs-w3m
 ; http://emacs-w3m.namazu.org/
+; note : worked when i used the dev branch instead of the stable branch for w3m.el
 (if (eq system-type 'windows-nt)
     (message "i am skipping w3m")
   (progn
     (message "i am starting w3m")
-    (add-to-list 'load-path  (concat emacs-root "emacs/emacs-w3m-1.4.4"))
+    ;(add-to-list 'load-path  (concat emacs-root "emacs/emacs-w3m-1.4.4"))
+    (add-to-list 'load-path "/usr/share/emacs/site-lisp/w3m")
+    (require 'w3m-load)
     (setq browse-url-browser-function 'w3m-browse-url)
     (autoload 'w3m-browse-url "w3m" "Ask a WWW browser to show a URL." t)
     (global-set-key "\C-xm" 'browse-url-at-point)))
@@ -537,7 +541,7 @@
 (add-hook 'css-mode-hook 'hexcolour-add-to-font-lock)
 ; end
 
-(global-set-key "\C-x\C-b" 'ibuffer) ; was list-buffers
+;(global-set-key "\C-x\C-b" 'ibuffer) ; was list-buffers ;use chord xb
 
 ; make emacs fonts bigger
 ; :height 100 ===> 10px
@@ -564,7 +568,7 @@
 
 ;(require 'org-babel-init)
 
-;full screen
+;full screen / maximize
 ;http://ubuntuforums.org/showthread.php?t=782196
 (defun toggle-fullscreen ()
   (interactive)
@@ -573,7 +577,7 @@
   (x-send-client-message nil 0 nil "_NET_WM_STATE" 32
 	    		 '(2 "_NET_WM_STATE_MAXIMIZED_HORZ" 0))
 )
-(toggle-fullscreen)
+;(toggle-fullscreen)
 
 ;(global-unset-key [left])
 ;(global-unset-key [right])
@@ -730,15 +734,15 @@
 (autoload 'django-html-mode "django-html-mode")
 (add-to-list 'auto-mode-alist '("\\.[sx]?html?\\'" . django-html-mode))
 
-; start emacs server
-; http://ipython.scipy.org/doc/rel-0.9.1/html/config/initial_config.html
-(defvar server-buffer-clients)
-;(when (and (fboundp 'server-start) (string-equal (getenv "TERM") 'xterm))
-(when (fboundp 'server-start)
-  (server-start)
-  (defun fp-kill-server-with-buffer-routine ()
-    (and server-buffer-clients (server-done)))
-  (add-hook 'kill-buffer-hook 'fp-kill-server-with-buffer-routine))
+;; ; start emacs server
+;; ; http://ipython.scipy.org/doc/rel-0.9.1/html/config/initial_config.html
+;; (defvar server-buffer-clients)
+;; ;(when (and (fboundp 'server-start) (string-equal (getenv "TERM") 'xterm))
+;; (when (fboundp 'server-start)
+;;   (server-start)
+;;   (defun fp-kill-server-with-buffer-routine ()
+;;     (and server-buffer-clients (server-done)))
+;;   (add-hook 'kill-buffer-hook 'fp-kill-server-with-buffer-routine))
 
 ; C-a once command beginning and twice to line beginning
 ; http://www.emacswiki.org/emacs/EshellFunctions
@@ -862,3 +866,50 @@
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
  )
+
+;(load-file "/home/kiru/opt/dvc/++build/dvc-load.el")
+
+(require 'dired+)
+
+(global-set-key (kbd "M-/") 'hippie-expand)
+(require 'bookmark+)
+
+;; (require 'google)
+;; (setq google-license-key "ABQIAAAAX24y9sOWkGb05hZfRXyLqhQMUf-zCmQEDwv1N16oyUFq57qOsBRRq3EREDeLpkl2ki4azX9DIGjX5g" ; optional
+;;       google-referer "http://www.kirubakaran.com/") ; required!
+;; (google-search-video "rickroll")
+
+
+(global-set-key "\C-cr" 'remember)
+
+(require 'org)
+(defun org_setup ()
+  (progn
+    (setq org-directory "/home/kiru/Documents/org")
+    (setq org-default-notes-file 
+          (concat org-directory "/notes.org"))
+    (define-key global-map "\C-cc" 'org-capture)
+    ))
+(org_setup)
+
+; keychord
+; http://www.emacswiki.org/emacs/download/key-chord.el
+(require 'key-chord)
+(key-chord-mode 1)
+(key-chord-define-global "xm" 'execute-extended-command)
+(key-chord-define-global "xo" 'other-window)
+(key-chord-define-global "xb" 'ibuffer)
+(key-chord-define-global "fk" 'kill-region)
+(key-chord-define-global "fs" 'save-buffer)
+(key-chord-define-global "fb" 'ido-switch-buffer)
+
+; doesn't seem to be working
+; --------------------------
+; plan9 style eshell
+; http://www.masteringemacs.org/articles/2010/12/13/complete-guide-mastering-eshell/
+(require 'eshell)
+(require 'em-smart)
+(setq eshell-where-to-jump 'begin)
+(setq eshell-review-quick-commands nil)
+(setq eshell-smart-space-goes-to-end t)
+
