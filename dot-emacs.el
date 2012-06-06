@@ -142,7 +142,7 @@
 
 (setq-default delete-old-versions 't)
 ;(alt-colors-2)
-(alt-colors-1) 
+(alt-colors-1)
 (dired emacs-root)
 (rename-buffer "dired1")
 ;(shell)
@@ -474,7 +474,9 @@
                   :width normal 
                   :family "outline-consolas"))))))
 
-(setq py-python-command-args '("-colors" "Linux"))
+;(setq py-python-command-args '("-colors" "Linux"))
+(setq py-python-command-args '("--colors=linux"))
+(setq py-shell-name "ipython")
 (setq ipython-command "/usr/bin/ipython")
 (require 'ipython)
 
@@ -588,32 +590,6 @@
 (global-unset-key [home])
 (global-unset-key [end])
 
-;; ; --- clojure ------------------------------------------------
-
-;; ; http://riddell.us/ClojureWithEmacsSlimeSwankOnUbuntu.html
-
-;; ;; clojure-mode
-;; (add-to-list 'load-path "~/opt/clojure-mode")
-;; (require 'clojure-mode)
-
-;; ;; swank-clojure
-;; (add-to-list 'load-path "~/opt/swank-clojure/src/emacs")
-
-;; (setq swank-clojure-jar-path "~/.clojure/clojure.jar"
-;;       swank-clojure-extra-classpaths (list
-;;                                       "~/opt/swank-clojure/src/main/clojure"
-;;                                       "~/.clojure/clojure-contrib.jar"))
-
-;; (require 'swank-clojure-autoload)
-
-;; ;; slime
-;; (eval-after-load "slime" 
-;;   '(progn (slime-setup '(slime-repl))))
-
-;; (add-to-list 'load-path "~/opt/slime")
-;; (require 'slime)
-;; (slime-setup)
-
 ; ------------------------------------------------------------
 
 ; http://stackoverflow.com/questions/1839313/
@@ -630,12 +606,12 @@
 (put 'set-goal-column 'disabled nil)
 
 ; http://code.google.com/p/yasnippet/
-(add-to-list 'load-path (concat emacs-root "emacs/plugins/yasnippet-0.6.1c"))
-(require 'yasnippet)
-(yas/initialize)
-(yas/load-directory (concat emacs-root "emacs/plugins/yasnippet-0.6.1c/snippets"))
-(setq yas/prompt-functions
-      '(yas/ido-prompt yas/x-prompt))
+;; (add-to-list 'load-path (concat emacs-root "emacs/plugins/yasnippet-0.6.1c"))
+;; (require 'yasnippet)
+;; (yas/initialize)
+;; (yas/load-directory (concat emacs-root "emacs/plugins/yasnippet-0.6.1c/snippets"))
+;; (setq yas/prompt-functions
+;;       '(yas/ido-prompt yas/x-prompt))
 
 ; ------------------------------------------------------------
 ; http://www.djcbsoftware.nl/dot-emacs.html
@@ -912,4 +888,74 @@
 (setq eshell-where-to-jump 'begin)
 (setq eshell-review-quick-commands nil)
 (setq eshell-smart-space-goes-to-end t)
+
+; use dpkg -L ledger-el to see where it is installed
+(require 'ledger)
+
+;temporarily commented out for better presentation
+;; ; http://www.nongnu.org/color-theme/
+;; (add-to-list 'load-path (concat emacs-root "emacs/color-theme-6.6.0"))
+;; (require 'color-theme)
+;; (eval-after-load "color-theme"
+;;   '(progn
+;;      (color-theme-initialize)
+;;      (color-theme-robin-hood)))
+
+;https://raw.github.com/paradoxxxzero/jinja2-mode/master/jinja2-mode.el
+(require 'jinja2-mode)
+
+; O'Reilly - Writing GNU Emacs Extensions -- begin
+
+(defalias 'scroll-ahead 'scroll-up)
+(defalias 'scroll-behind 'scroll-down)
+
+(defun scroll-line-ahead (&optional n)
+  "Scroll ahead n lines (defaul = 1)"
+  (interactive "P")
+  (scroll-ahead (prefix-numeric-value n)))
+
+(defun scroll-line-behind (&optional n)
+  "Scroll behind n lines (defaul = 1)"
+  (interactive "P")
+  (scroll-behind (prefix-numeric-value n)))
+
+(global-set-key "\C-x\C-q" 'quoted-insert)
+(global-set-key "\C-q" 'scroll-line-behind)
+(global-set-key "\C-z" 'scroll-line-ahead)
+
+; O'Reilly - Writing GNU Emacs Extensions -- end
+
+; erc - begin
+; http://emacs-fu.blogspot.com/2009/06/erc-emacs-irc-client.html
+(require 'erc)
+(erc-autojoin-mode t)
+(setq erc-autojoin-channels-alist
+  '((".*\\.freenode.net" "#startups" "#python-dev")))
+(setq erc-hide-list '("JOIN" "PART" "QUIT" "NICK"))
+
+(defun erc-start-or-switch ()
+  "Connect to ERC, or switch to last active buffer"
+  (interactive)
+  (if (get-buffer "irc.freenode.net:6667") ;; ERC already active?
+
+    (erc-track-switch-buffer 1) ;; yes: switch to last active
+    (when (y-or-n-p "Start ERC? ") ;; no: maybe start ERC
+      (erc :server "irc.freenode.net" 
+           :port 6667 
+           :nick "kirubakaran" 
+           :full-name "kirubakaran athmanathan")
+      )))
+
+(global-set-key (kbd "C-c i") 'erc-start-or-switch)
+; erc - end
+
+(add-hook 'org-mode-hook 'visual-line-mode)
+
+; Ruby REPL
+; https://github.com/nonsequitur/inf-ruby
+(autoload 'inf-ruby "inf-ruby" "Run an inferior Ruby process" t)
+(autoload 'inf-ruby-keys "inf-ruby" "" t)
+(eval-after-load 'ruby-mode
+  '(add-hook 'ruby-mode-hook 'inf-ruby-keys))
+;(inf-ruby)
 
