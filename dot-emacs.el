@@ -537,7 +537,7 @@
          'face (list :background 
                      (match-string-no-properties 0)))))))
 
-(defun hexcolour-add-to-font-lock ()
+(defun hexcolour-add-to-font-lockfont-lock ()
   (font-lock-add-keywords nil hexcolour-keywords))
 
 (add-hook 'css-mode-hook 'hexcolour-add-to-font-lock)
@@ -548,8 +548,11 @@
 ; make emacs fonts bigger
 ; :height 100 ===> 10px
 ; http://stackoverflow.com/questions/294664/how-to-set-the-font-size-in-emacs
-(set-face-attribute 'default nil :height 110)
+;(set-face-attribute 'default nil :height 120)
 
+; Use a better font
+(when (string= system-name "hulk")
+  (set-default-font "Inconsolata-16"))
 
 ; Zap-back-to-char
 ; http://www.reddit.com/r/programming/comments/8lfx7/what_emacs_commands_do_you_use_most_and_find_most/c09p0ut
@@ -865,6 +868,7 @@
     (setq org-default-notes-file 
           (concat org-directory "/notes.org"))
     (define-key global-map "\C-cc" 'org-capture)
+    (define-key global-map "\C-cl" 'org-store-link)
     ))
 (org_setup)
 
@@ -877,7 +881,7 @@
 (key-chord-define-global "xb" 'ibuffer)
 (key-chord-define-global "fk" 'kill-region)
 (key-chord-define-global "fs" 'save-buffer)
-(key-chord-define-global "fb" 'ido-switch-buffer)
+;(key-chord-define-global "fb" 'ido-switch-buffer)
 
 ; doesn't seem to be working
 ; --------------------------
@@ -891,6 +895,12 @@
 
 ; use dpkg -L ledger-el to see where it is installed
 (require 'ledger)
+;; 2012-jun-18 - note: i couldn't find ledger.el in the system
+;; 2012-jun-18 - so i copied it from github /usr/share/emacs/site-lisp/
+(add-hook
+ 'ledger-mode-hook
+ (lambda ()
+   (local-set-key (kbd "C-c =") 'ledger-align-amounts)))
 
 ;temporarily commented out for better presentation
 ;; ; http://www.nongnu.org/color-theme/
@@ -950,6 +960,7 @@
 ; erc - end
 
 (add-hook 'org-mode-hook 'visual-line-mode)
+(add-hook 'org-mode-hook 'auto-fill-mode)
 
 ; Ruby REPL
 ; https://github.com/nonsequitur/inf-ruby
@@ -957,5 +968,24 @@
 (autoload 'inf-ruby-keys "inf-ruby" "" t)
 (eval-after-load 'ruby-mode
   '(add-hook 'ruby-mode-hook 'inf-ruby-keys))
-;(inf-ruby)
+(inf-ruby)
+(setq ruby-indent-level 2)
 
+; Mark Down
+; http://jblevins.org/projects/markdown-mode/
+(autoload 'markdown-mode
+  "markdown-mode.el" "Major mode for editing Markdown files" t)
+(setq auto-mode-alist
+      (cons '("\\.md" . markdown-mode) auto-mode-alist))
+
+(setq org-capture-templates
+      '(("j" "Journal" entry (file+datetree org-default-notes-file)
+         "* %?\nEntered on %U\n  %i\n  %a")))
+
+; coffeescript
+; https://github.com/defunkt/coffee-mode
+(require 'coffee-mode)
+(setq whitespace-action
+      '(auto-cleanup)) ;; automatically clean up bad whitespace
+(setq whitespace-style
+      '(trailing space-before-tab indentation empty space-after-tab)) ;; only show bad whitespace
