@@ -39,6 +39,7 @@
 (if (fboundp 'tool-bar-mode)   (tool-bar-mode -1))
 (if (fboundp 'menu-bar-mode)   (menu-bar-mode -1))
  
+
 (global-set-key [f5] 'call-last-kbd-macro)
 
 ; -------------------- stevey end --------------------
@@ -231,8 +232,8 @@
     (global-set-key "\C-xm" 'browse-url-at-point)))
 
 
-(define-key global-map [f11] 'hexl-find-file)
-(define-key global-map [f12] 'compare-windows)
+;(define-key global-map [f11] 'hexl-find-file)
+;(define-key global-map [f12] 'compare-windows)
 (global-set-key [kp-subtract] "\C-a\C-k\C-d") ; numpad minus = nuke line
 
 
@@ -365,9 +366,21 @@
 (defun my-date ()
   (interactive)
   (insert
-   (concat "[" (format-time-string "%b %d, %Y %H:%M") "]")))
+   (my-date-str)))
 
-(define-key global-map [f3] 'my-date)
+(defun my-date-str ()
+  (concat "[" (format-time-string "%b %d, %Y %H:%M") "] "))
+
+(defun my-time ()
+  (interactive)
+  (insert
+   (my-time-str)))
+
+(defun my-time-str ()
+  (concat "[" (format-time-string "Time %H:%M") "] "))
+
+(define-key global-map [f3] 'my-time)
+(define-key global-map [S-f3] 'my-date)
 
 ; ------------------------------------------------------------
 
@@ -474,11 +487,15 @@
                   :width normal 
                   :family "outline-consolas"))))))
 
-;(setq py-python-command-args '("-colors" "Linux"))
-(setq py-python-command-args '("--colors=linux"))
+(require 'python-mode)
+;(require 'ipython)
 (setq py-shell-name "ipython")
 (setq ipython-command "/usr/bin/ipython")
-(require 'ipython)
+
+;(setq py-python-command-args '("-pylab" "-colors" "LightBG"))
+;(setq-default py-python-command-args '("--colors=LightBG"))
+(setq-default py-python-command-args '("--colors=Linux"))
+
 
 ;experimental
 ;(add-to-list 'load-path (concat emacs-root "emacs/g-client"))
@@ -880,7 +897,7 @@
 (key-chord-define-global "xo" 'other-window)
 (key-chord-define-global "xb" 'ibuffer)
 (key-chord-define-global "fk" 'kill-region)
-(key-chord-define-global "fs" 'save-buffer)
+;(key-chord-define-global "fs" 'save-buffer)
 ;(key-chord-define-global "fb" 'ido-switch-buffer)
 
 ; doesn't seem to be working
@@ -959,7 +976,7 @@
 (global-set-key (kbd "C-c i") 'erc-start-or-switch)
 ; erc - end
 
-(add-hook 'org-mode-hook 'visual-line-mode)
+;(add-hook 'org-mode-hook 'visual-line-mode)
 (add-hook 'org-mode-hook 'auto-fill-mode)
 
 ; Ruby REPL
@@ -989,3 +1006,199 @@
       '(auto-cleanup)) ;; automatically clean up bad whitespace
 (setq whitespace-style
       '(trailing space-before-tab indentation empty space-after-tab)) ;; only show bad whitespace
+
+; word-count
+(defun wc nil "Count words in buffer"
+  (interactive)
+  (save-excursion
+    (save-restriction
+      (save-match-data
+        (shell-command-on-region (point-min) (point-max) "wc -w"))))
+  nil)
+
+(defun wcr (&optional b e)
+  (interactive "r")
+  (save-excursion
+    (save-restriction
+      (save-match-data
+        (shell-command-on-region b e "wc -w"))))
+  nil)
+
+(defun wcst nil "Count words in subtree"
+  (interactive)
+  (save-excursion
+    (save-restriction
+      (save-match-data
+        (org-narrow-to-subtree)
+        (shell-command-on-region (point-min) (point-max) "wc -w"))))
+  nil)
+
+(defun start-day ()
+  (interactive)
+  (insert
+   (concat "\n*** " (format-time-string "%b %d (%a)") "\n"
+           "**** todo\n"
+           "**** done\n"
+           "**** freewriting\n"
+           "     " (my-date-str) "\n"
+           "     \n"
+           "     "
+           )))
+
+(define-key global-map [f12] 'start-day)
+
+; jrockway's eproject
+(add-to-list 'load-path (concat emacs-root "emacs/eproject"))
+(require 'eproject)
+(require 'eproject-extras)
+(define-project-type rails (generic)
+  (or (look-for "Gemfile"))
+  :relevant-files ("\.py$" "\.js$" "\.css$"))
+
+; sass
+;; (setq exec-path (cons (expand-file-name "~/.rvm/gems/ruby-1.9.3-p194/bin") exec-path))
+;; (add-to-list 'load-path (expand-file-name "~/emacs/scss-mode"))
+;; (autoload 'scss-mode "scss-mode")
+;; (add-to-list 'auto-mode-alist '("\\.scss\\'" . scss-mode))
+;;
+;; need to do the equiv of
+;; [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
+;; for the above to work
+
+(global-hi-lock-mode 1)
+
+(defalias 'qrr 'query-replace-regexp)
+
+; collapse org-mode buffer to first level titles
+(fset 'collapse-to-title
+      (lambda
+        (&optional arg)
+        "Keyboard macro."
+        (interactive "p")
+        (kmacro-exec-ring-item
+         (quote ([134217788 21 134217848 111 114 103 45 103 108
+         111 tab return tab] 0 "%d")) arg)))
+
+; Mar 08, 2013 - Wrote wrapper to keep it from triggering in other buffers
+(defun collapse-to-title-wrap (&optional arg)
+  (interactive "p")
+  (if (string= (buffer-name) "timebuckets.org")
+      (collapse-to-title)
+    (insert "fl")
+    ))
+
+(key-chord-define org-mode-map "fl" 'collapse-to-title-wrap)
+
+;;; --- begin : http://whattheemacsd.com/
+
+;; Auto refresh buffers
+(global-auto-revert-mode 1)
+
+;; Also auto refresh dired, but be quiet about it
+(setq global-auto-revert-non-file-buffers t)
+(setq auto-revert-verbose nil)
+
+;; full screen magit-status
+
+(defadvice magit-status (around magit-fullscreen activate)
+  (window-configuration-to-register :magit-fullscreen)
+  ad-do-it
+  (delete-other-windows))
+
+(defun magit-quit-session ()
+  "Restores the previous window configuration and kills the magit buffer"
+  (interactive)
+  (kill-buffer)
+  (jump-to-register :magit-fullscreen))
+
+(define-key magit-status-mode-map (kbd "q") 'magit-quit-session)
+
+;; easily move lines up and down
+
+(defun move-line-down ()
+  (interactive)
+  (let ((col (current-column)))
+    (save-excursion
+      (forward-line)
+      (transpose-lines 1))
+    (forward-line)
+    (move-to-column col)))
+
+(defun move-line-up ()
+  (interactive)
+  (let ((col (current-column)))
+    (save-excursion
+      (forward-line)
+      (transpose-lines -1))
+    (move-to-column col)))
+
+(global-set-key (kbd "<C-S-down>") 'move-line-down)
+(global-set-key (kbd "<C-S-up>") 'move-line-up)
+
+;; opening lines
+(defun open-line-below ()
+  (interactive)
+  (end-of-line)
+  (newline)
+  (indent-for-tab-command))
+
+(defun open-line-above ()
+  (interactive)
+  (beginning-of-line)
+  (newline)
+  (forward-line -1)
+  (indent-for-tab-command))
+
+(global-set-key (kbd "<M-return>") 'open-line-below)
+(global-set-key (kbd "<M-S-return>") 'open-line-above)
+
+;; easier way of renaming current buffer file
+
+(defun rename-current-buffer-file ()
+  "Renames current buffer and file it is visiting."
+  (interactive)
+  (let ((name (buffer-name))
+        (filename (buffer-file-name)))
+    (if (not (and filename (file-exists-p filename)))
+        (error "Buffer '%s' is not visiting a file!" name)
+      (let ((new-name (read-file-name "New name: " filename)))
+        (if (get-buffer new-name)
+            (error "A buffer named '%s' already exists!" new-name)
+          (rename-file filename new-name 1)
+          (rename-buffer new-name)
+          (set-visited-file-name new-name)
+          (set-buffer-modified-p nil)
+          (message "File '%s' successfully renamed to '%s'"
+                   name (file-name-nondirectory new-name)))))))
+
+(global-set-key (kbd "C-x C-r") 'rename-current-buffer-file)
+
+;;; --- end : http://whattheemacsd.com/
+
+(custom-set-variables
+ '(py-shell-switch-buffers-on-execute 1))
+
+; --- begin journalhash ---
+; post hash of journal.org to firebase
+; view hashes at https://journalhash.firebaseio.com/hashes.json
+
+(add-hook 'after-save-hook 'journal-hash-post)
+(add-hook 'after-revert-hook 'journal-hash-post)
+
+(defun journal-hash-post ()
+  (interactive) ;make it available in buffers
+  (if (string= (buffer-name) "journal.org")
+      (progn
+        (setq journal-hash (md5 (current-buffer)))
+        (setq data (format "{ \"%s\": \"%s\|%s\" }"
+                           (system-name)
+                           journal-hash
+                           (format-time-string "%b %d, %Y %H:%M")))
+        (setq urlend "https://journalhash.firebaseIO.com/hashes.json")
+        (setq cmd (format "curl -X PATCH -d '%s' %s" data urlend))
+        (start-process-shell-command "journalhash" nil cmd)
+        )
+    )
+  nil)
+
+; --- end journalhash ---
