@@ -875,20 +875,6 @@
 ;;       google-referer "http://www.kirubakaran.com/") ; required!
 ;; (google-search-video "rickroll")
 
-
-(global-set-key "\C-cr" 'remember)
-
-(require 'org)
-(defun org_setup ()
-  (progn
-    (setq org-directory "/home/kiru/Documents/org")
-    (setq org-default-notes-file 
-          (concat org-directory "/notes.org"))
-    (define-key global-map "\C-cc" 'org-capture)
-    (define-key global-map "\C-cl" 'org-store-link)
-    ))
-(org_setup)
-
 ; keychord
 ; http://www.emacswiki.org/emacs/download/key-chord.el
 (require 'key-chord)
@@ -899,6 +885,36 @@
 (key-chord-define-global "fk" 'kill-region)
 ;(key-chord-define-global "fs" 'save-buffer)
 ;(key-chord-define-global "fb" 'ido-switch-buffer)
+
+(global-set-key "\C-cr" 'remember)
+
+(defun org_setup ()
+  (progn
+    (setq org-directory "/home/kiru/Documents/org")
+    (setq org-default-notes-file 
+          (concat org-directory "/notes.org"))
+    (define-key global-map "\C-cc" 'org-capture)
+    (define-key global-map "\C-cl" 'org-store-link)
+    ;; (add-hook 'org-mode-hook 'visual-line-mode)
+    (add-hook 'org-mode-hook 'auto-fill-mode)
+    (key-chord-define org-mode-map "fl" 'collapse-to-title-wrap)
+    ))
+
+(message "near 23/24 check")
+(if (> emacs-major-version 23)
+    (progn
+      (message "in >23")
+      (eval-after-load "org"
+        '(progn
+           (org_setup)
+           )))
+  (progn
+    (message "in <=23")
+    (require 'org)
+    (org_setup)
+    )
+  )
+
 
 ; doesn't seem to be working
 ; --------------------------
@@ -975,9 +991,6 @@
 
 (global-set-key (kbd "C-c i") 'erc-start-or-switch)
 ; erc - end
-
-;(add-hook 'org-mode-hook 'visual-line-mode)
-(add-hook 'org-mode-hook 'auto-fill-mode)
 
 ; Ruby REPL
 ; https://github.com/nonsequitur/inf-ruby
@@ -1086,8 +1099,6 @@
       (collapse-to-title)
     (insert "fl")
     ))
-
-(key-chord-define org-mode-map "fl" 'collapse-to-title-wrap)
 
 ;;; --- begin : http://whattheemacsd.com/
 
@@ -1202,3 +1213,13 @@
   nil)
 
 ; --- end journalhash ---
+
+; expand emacs package manager with community contributed packages
+; http://sachachua.com/blog/2011/01/emacs-24-package-manager/
+(require 'package)
+;; Add the original Emacs Lisp Package Archive
+(add-to-list 'package-archives
+             '("elpa" . "http://tromey.com/elpa/"))
+;; Add the user-contributed repository
+(add-to-list 'package-archives
+             '("marmalade" . "http://marmalade-repo.org/packages/"))
