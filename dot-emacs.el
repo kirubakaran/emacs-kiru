@@ -114,12 +114,13 @@
 
 ; http://www.math.umn.edu/~garrett/shortest/emacs_customization.html
 (custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(blink-cursor-mode nil)
  '(bmkp-last-as-first-bookmark-file "~/.emacs.bmk")
+ '(py-shell-switch-buffers-on-execute 1)
  '(vc-follow-symlinks nil))
 
 (defun alt-colors-2 ()
@@ -216,20 +217,20 @@
 ;(color-theme-subtle-hacker)
 
 
-; w3m
-; http://www.emacswiki.org/cgi-bin/emacs-en/emacs-w3m
-; http://emacs-w3m.namazu.org/
-; note : worked when i used the dev branch instead of the stable branch for w3m.el
-(if (eq system-type 'windows-nt)
-    (message "i am skipping w3m")
-  (progn
-    (message "i am starting w3m")
-    ;(add-to-list 'load-path  (concat emacs-root "emacs/emacs-w3m-1.4.4"))
-    (add-to-list 'load-path "/usr/share/emacs/site-lisp/w3m")
-    (require 'w3m-load)
-    (setq browse-url-browser-function 'w3m-browse-url)
-    (autoload 'w3m-browse-url "w3m" "Ask a WWW browser to show a URL." t)
-    (global-set-key "\C-xm" 'browse-url-at-point)))
+;; ; w3m
+;; ; http://www.emacswiki.org/cgi-bin/emacs-en/emacs-w3m
+;; ; http://emacs-w3m.namazu.org/
+;; ; note : worked when i used the dev branch instead of the stable branch for w3m.el
+;; (if (eq system-type 'windows-nt)
+;;     (message "i am skipping w3m")
+;;   (progn
+;;     (message "i am starting w3m")
+;;     ;(add-to-list 'load-path  (concat emacs-root "emacs/emacs-w3m-1.4.4"))
+;;     (add-to-list 'load-path "/usr/share/emacs/site-lisp/w3m")
+;;     (require 'w3m-load)
+;;     (setq browse-url-browser-function 'w3m-browse-url)
+;;     (autoload 'w3m-browse-url "w3m" "Ask a WWW browser to show a URL." t)
+;;     (global-set-key "\C-xm" 'browse-url-at-point)))
 
 
 ;(define-key global-map [f11] 'hexl-find-file)
@@ -296,7 +297,7 @@
 
 ; ----------------------------------------
 
-(split-window-horizontally)
+;(split-window-horizontally)
 
 ; cygwin
 ; http://www.khngai.com/emacs/cygwin.php
@@ -463,9 +464,6 @@
 
 ; ------------------------------------------------------------
 
-(autoload 'js2-mode "js2" nil t)
-(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
-  
 (if (eq system-type 'windows-nt)
     (custom-set-faces
      ;; custom-set-faces was added by Custom.
@@ -751,81 +749,17 @@
 (add-hook 'eshell-mode-hook
           '(lambda () (define-key eshell-mode-map "\C-a" 'eshell-maybe-bol)))
 
+; [Apr 09, 2013] I'm going to use https://github.com/mooz/js2-mode
+(autoload 'js2-mode "js2-mode" nil t)
+(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
 
 ; fixing js2-mode indentation
 ; bottom of : https://github.com/mitchellh/dotfiles/blob/master/emacs.d/modes.el
 ; thanks to : http://news.ycombinator.com/item?id=1952346
 
-;; js-mode (espresso)
-;; Espresso mode has sane indenting so we use that.
-(setq js-indent-level 2)
-
-;; ;; JS2-Mode
-;; (add-to-list 'load-path (concat packages-dir "/js2-mode"))
-;; (autoload 'js2-mode "js2" nil t)
-
-;; Customize JS2
-(setq js2-basic-offset 2)
+(setq js-indent-level 4)
+(setq js2-basic-offset 4)
 (setq js2-cleanup-whitespace t)
-
-;; Custom indentation function since JS2 indenting is terrible.
-;; Uses js-mode's (espresso-mode) indentation semantics.
-;;
-;; Based on: http://mihai.bazon.net/projects/editing-javascript-with-emacs-js2-mode
-;; (Thanks!)
-(defun my-js2-indent-function ()
-  (interactive)
-  (save-restriction
-    (widen)
-    (let* ((inhibit-point-motion-hooks t)
-           (parse-status (save-excursion (syntax-ppss (point-at-bol))))
-           (offset (- (current-column) (current-indentation)))
-           (indentation (js--proper-indentation parse-status))
-           node)
-
-      (save-excursion
-
-        ;; I like to indent case and labels to half of the tab width
-        (back-to-indentation)
-        (if (looking-at "case\\s-")
-            (setq indentation (+ indentation (/ js-indent-level 2))))
-
-        ;; consecutive declarations in a var statement are nice if
-        ;; properly aligned, i.e:
-        ;;
-        ;; var foo = "bar",
-        ;;     bar = "foo";
-        (setq node (js2-node-at-point))
-        (when (and node
-                   (= js2-NAME (js2-node-type node))
-                   (= js2-VAR (js2-node-type (js2-node-parent node))))
-          (setq indentation (+ 4 indentation))))
-
-      (indent-line-to indentation)
-      (when (> offset 0) (forward-char offset)))))
-
-(defun my-js2-mode-hook ()
-  (if (not (boundp 'js--proper-indentation))
-      (progn (js-mode)
-             (remove-hook 'js2-mode-hook 'my-js2-mode-hook)
-             (js2-mode)
-             (add-hook 'js2-mode-hook 'my-js2-mode-hook)))
-  (set (make-local-variable 'indent-line-function) 'my-js2-indent-function)
-  (define-key js2-mode-map [(return)] 'newline-and-indent)
-  (define-key js2-mode-map [(backspace)] 'c-electric-backspace)
-  (define-key js2-mode-map [(control d)] 'c-electric-delete-forward)
-  (message "JS2 mode hook ran."))
-
-;; Add the hook so this is all loaded when JS2-mode is loaded
-(add-hook 'js2-mode-hook 'my-js2-mode-hook)
-
-; end js2-mode
-
-
-;(global-set-key [f5] 'slime-js-reload)
-(add-hook 'js2-mode-hook
-          (lambda ()
-            (slime-js-minor-mode 1)))
 
 ;http://stackoverflow.com/questions/88399/how-do-i-duplicate-a-whole-line-in-emacs
 (defun duplicate-line()
@@ -857,10 +791,10 @@
 (distel-setup)
 
 (custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  )
 
 ;(load-file "/home/kiru/opt/dvc/++build/dvc-load.el")
@@ -900,10 +834,21 @@
     (key-chord-define org-mode-map "fl" 'collapse-to-title-wrap)
     ))
 
-(message "near 23/24 check")
+(message "Emacs version 23/24 check")
 (if (> emacs-major-version 23)
     (progn
       (message "in >23")
+
+      ;; expand emacs package manager with community contributed packages
+      ;; http://sachachua.com/blog/2011/01/emacs-24-package-manager/
+      (require 'package)
+      ;; Add the original Emacs Lisp Package Archive
+      (add-to-list 'package-archives
+                   '("elpa" . "http://tromey.com/elpa/"))
+      ;; Add the user-contributed repository
+      (add-to-list 'package-archives
+                   '("marmalade" . "http://marmalade-repo.org/packages/"))
+
       (eval-after-load "org"
         '(progn
            (org_setup)
@@ -1186,8 +1131,7 @@
 
 ;;; --- end : http://whattheemacsd.com/
 
-(custom-set-variables
- '(py-shell-switch-buffers-on-execute 1))
+
 
 ; --- begin journalhash ---
 ; post hash of journal.org to firebase
@@ -1214,12 +1158,3 @@
 
 ; --- end journalhash ---
 
-; expand emacs package manager with community contributed packages
-; http://sachachua.com/blog/2011/01/emacs-24-package-manager/
-(require 'package)
-;; Add the original Emacs Lisp Package Archive
-(add-to-list 'package-archives
-             '("elpa" . "http://tromey.com/elpa/"))
-;; Add the user-contributed repository
-(add-to-list 'package-archives
-             '("marmalade" . "http://marmalade-repo.org/packages/"))
