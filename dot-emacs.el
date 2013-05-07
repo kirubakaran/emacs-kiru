@@ -100,6 +100,12 @@
 (setq make-backup-files t)
 (setq version-control t)
 (setq backup-directory-alist (quote ((".*" . "~/.emacs_backups/"))))
+
+; auto-save files
+; http://stackoverflow.com/a/2020954/2221101
+(setq auto-save-default t)
+(defvar autosave-dir (expand-file-name "~/.emacs_autosave/"))
+(setq auto-save-file-name-transforms `((".*" ,autosave-dir t)))
 ; ----------------------------------------
 
 ; paren hilite
@@ -196,16 +202,18 @@
 ;      (setq slime-startup-animation nil)
       )
   (progn
-      (message "i am starting slime")
-      (setq inferior-lisp-program "/usr/bin/sbcl")
-      (add-to-list 'load-path "/usr/share/emacs/site-lisp/slime")
-      (require 'slime)
-      (slime-setup)
-      (slime-setup '(slime-fancy slime-asdf))
-      ;(slime-setup '(slime-fancy slime-asdf slime-js))
-      (slime)
-      ; http://www.jasondunsmore.com/emacs/dotemacs.txt
-      (setq slime-startup-animation nil)))
+    ; [May 04, 2013 18:44] - disabling slime as "Polling /tmp/slime.5268" message persists in the minibuffer
+      ;; (message "i am starting slime")
+      ;; (setq inferior-lisp-program "/usr/bin/sbcl")
+      ;; (add-to-list 'load-path "/usr/share/emacs/site-lisp/slime")
+      ;; (require 'slime)
+      ;; (slime-setup)
+      ;; (slime-setup '(slime-fancy slime-asdf))
+      ;; ;(slime-setup '(slime-fancy slime-asdf slime-js))
+      ;; (slime)
+      ;; ; http://www.jasondunsmore.com/emacs/dotemacs.txt
+      ;; (setq slime-startup-animation nil)
+))
 
 ; color theme
 ; http://www.emacswiki.org/cgi-bin/wiki?ColorTheme
@@ -238,35 +246,41 @@
 (global-set-key [kp-subtract] "\C-a\C-k\C-d") ; numpad minus = nuke line
 
 
-; auto encryption - begin
-; http://www.emacswiki.org/cgi-bin/wiki/AutoEncryption
-(defvar pgg-gpg-user-id "kirubakaran")
-(autoload 'pgg-make-temp-file "pgg" "PGG")
-(autoload 'pgg-gpg-decrypt-region "pgg-gpg" "PGG GnuPG")
-(define-generic-mode 'gpg-file-mode
-  (list ?#) 
-  nil nil
-  '(".gpg\\'" ".gpg-encrypted\\'")
-  (list (lambda ()
-	    (add-hook 'before-save-hook
-                      (lambda () 
-                        (let ((pgg-output-buffer (current-buffer)))
-                          (pgg-gpg-encrypt-region (point-min) (point-max)
-                                                  (list pgg-gpg-user-id))))
-                      nil t)
-	    (add-hook 'after-save-hook 
-		      (lambda ()
-                        (let ((pgg-output-buffer (current-buffer)))
-                          (pgg-gpg-decrypt-region (point-min) (point-max)))
-			(set-buffer-modified-p nil)
-			(auto-save-mode nil))
-		      nil t)
-            (let ((pgg-output-buffer (current-buffer)))
-              (pgg-gpg-decrypt-region (point-min) (point-max)))
-	    (auto-save-mode nil)
-	    (set-buffer-modified-p nil)))
-  "Mode for gpg encrypted files")
-; auto encryption - end
+;; Apr 26, 2013 - commented out the following section as emacs said:
+;; "Package pgg-gpg is obsolete!"
+;;
+;; ; auto encryption - begin
+;; ; http://www.emacswiki.org/cgi-bin/wiki/AutoEncryption
+;; (defvar pgg-gpg-user-id "kirubakaran")
+;; (autoload 'pgg-make-temp-file "pgg" "PGG")
+;; (autoload 'pgg-gpg-decrypt-region "pgg-gpg" "PGG GnuPG")
+;; (define-generic-mode 'gpg-file-mode
+;;   (list ?#) 
+;;   nil nil
+;;   '(".gpg\\'" ".gpg-encrypted\\'")
+;;   (list (lambda ()
+;; 	    (add-hook 'before-save-hook
+;;                       (lambda () 
+;;                         (let ((pgg-output-buffer (current-buffer)))
+;;                           (pgg-gpg-encrypt-region (point-min) (point-max)
+;;                                                   (list pgg-gpg-user-id))))
+;;                       nil t)
+;; 	    (add-hook 'after-save-hook 
+;; 		      (lambda ()
+;;                         (let ((pgg-output-buffer (current-buffer)))
+;;                           (pgg-gpg-decrypt-region (point-min) (point-max)))
+;; 			(set-buffer-modified-p nil)
+;; 			(auto-save-mode nil))
+;; 		      nil t)
+;;             (let ((pgg-output-buffer (current-buffer)))
+;;               (pgg-gpg-decrypt-region (point-min) (point-max)))
+;; 	    (auto-save-mode nil)
+;; 	    (set-buffer-modified-p nil)))
+;;   "Mode for gpg encrypted files")
+;; ; auto encryption - end
+
+(require 'epa-file)
+(epa-file-enable)
 
 ; ----------------------------------------
 ; set window title to contain the current buffer name
@@ -380,8 +394,14 @@
 (defun my-time-str ()
   (concat "[" (format-time-string "Time %H:%M") "] "))
 
+(defun my-just-date ()
+  (interactive)
+  (insert
+   (format-time-string "%b %d")))
+
 (define-key global-map [f3] 'my-time)
 (define-key global-map [S-f3] 'my-date)
+(define-key global-map [C-f3] 'my-just-date)
 
 ; ------------------------------------------------------------
 
@@ -558,7 +578,7 @@
 (add-hook 'css-mode-hook 'hexcolour-add-to-font-lock)
 ; end
 
-;(global-set-key "\C-x\C-b" 'ibuffer) ; was list-buffers ;use chord xb
+(global-set-key "\C-x\C-b" 'ibuffer) ; was list-buffers ;use chord xb
 
 ; make emacs fonts bigger
 ; :height 100 ===> 10px
@@ -795,7 +815,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(js2-function-param ((t (:foreground "lawn green")))))
 
 ;(load-file "/home/kiru/opt/dvc/++build/dvc-load.el")
 
@@ -832,6 +852,7 @@
     ;; (add-hook 'org-mode-hook 'visual-line-mode)
     (add-hook 'org-mode-hook 'auto-fill-mode)
     (key-chord-define org-mode-map "fl" 'collapse-to-title-wrap)
+    (setq org-clock-modeline-total 'current)
     ))
 
 (message "Emacs version 23/24 check")
@@ -997,6 +1018,7 @@
    (concat "\n*** " (format-time-string "%b %d (%a)") "\n"
            "**** todo\n"
            "**** done\n"
+           "**** worry-later\n"
            "**** freewriting\n"
            "     " (my-date-str) "\n"
            "     \n"
@@ -1131,8 +1153,6 @@
 
 ;;; --- end : http://whattheemacsd.com/
 
-
-
 ; --- begin journalhash ---
 ; post hash of journal.org to firebase
 ; view hashes at https://journalhash.firebaseio.com/hashes.json
@@ -1142,13 +1162,19 @@
 
 (defun journal-hash-post ()
   (interactive) ;make it available in buffers
-  (if (string= (buffer-name) "journal.org")
+  (if (or (string= (buffer-name) "journal.org")
+          (string= (buffer-name) "journal.org.gpg")
+          (string= (buffer-name) "journal-curr.org")
+          (string= (buffer-name) "journal-curr.org.gpg"))
       (progn
         (setq journal-hash (md5 (current-buffer)))
-        (setq data (format "{ \"%s\": \"%s\|%s\" }"
+        (setq data (format "{ \"%s--%s\": \"%s\|%s\" }"
+                           (replace-regexp-in-string "\\." "_"
+                                                     (buffer-name))
                            (system-name)
                            journal-hash
                            (format-time-string "%b %d, %Y %H:%M")))
+        ;(message data)
         (setq urlend "https://journalhash.firebaseIO.com/hashes.json")
         (setq cmd (format "curl -X PATCH -d '%s' %s" data urlend))
         (start-process-shell-command "journalhash" nil cmd)
@@ -1157,4 +1183,14 @@
   nil)
 
 ; --- end journalhash ---
+
+; show and copy full path of file in current buffer
+; http://stackoverflow.com/questions/3669511/the-function-to-show-current-files-full-path-in-mini-buffer
+(defun show-file-name ()
+  "Show the full path file name in the minibuffer."
+  (interactive)
+  (message (buffer-file-name))
+  (kill-new (file-truename buffer-file-name))
+)
+(global-set-key "\C-cz" 'show-file-name)
 
