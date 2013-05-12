@@ -842,6 +842,16 @@
 
 (global-set-key "\C-cr" 'remember)
 
+; http://orgmode.org/worg/org-hacks.html
+(defun my-org-extract-link ()
+  "Extract the link location at point and put it on the killring."
+  (interactive)
+  (when (org-in-regexp org-bracket-link-regexp 1)
+    (setq link (org-link-unescape (org-match-string-no-properties 1)))
+    (message (concat "In kill ring : " link))
+    (kill-new link)))
+
+
 (defun org_setup ()
   (progn
     (setq org-directory "/home/kiru/Documents/org")
@@ -851,6 +861,10 @@
     (define-key global-map "\C-cl" 'org-store-link)
     ;; (add-hook 'org-mode-hook 'visual-line-mode)
     (add-hook 'org-mode-hook 'auto-fill-mode)
+    (add-hook 'org-mode-hook
+              (lambda ()
+                (local-set-key "\C-ck" 'my-org-extract-link)))
+    (setq sentence-end-double-space nil) ; fixing fill
     (key-chord-define org-mode-map "fl" 'collapse-to-title-wrap)
     (setq org-clock-modeline-total 'current)
     ))
