@@ -1261,3 +1261,17 @@
 
 (require 'highlight-chars)
 (global-set-key (kbd "<f11>") 'hc-toggle-highlight-tabs)
+(global-set-key (kbd "S-<f11>") 'hc-toggle-highlight-trailing-whitespace)
+
+;make emacs work with python virtual environments
+;https://github.com/aculich/virtualenv.el
+(setenv "WORKON_HOME" "/home/kiru/pyenv")
+(require 'virtualenv)
+
+(defun dired-keys-additional ()
+  (local-set-key (kbd "C-c C-e") 'dired-toggle-read-only))
+
+(add-hook 'dired-mode-hook 'dired-keys-additional)
+
+(require 'ace-jump-mode)
+(define-key global-map (kbd "C-S-s") 'ace-jump-mode)
