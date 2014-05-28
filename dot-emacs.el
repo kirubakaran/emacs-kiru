@@ -1,13 +1,14 @@
 (message "*****  .emacs loading  *****")
 
 ; -------------------- stevey bgn --------------------
- 
-(defvar emacs-root 
+
+(defvar emacs-root
   (if (eq system-type 'windows-nt)
       "C:/users/kirath/"
       "~/"))
 
 (add-to-list 'load-path (concat emacs-root "emacs"))
+;(add-to-list 'load-path (concat emacs-root "emacs/magit/share/emacs/site-lisp"))
 
 (require 'cl)
 
@@ -21,7 +22,7 @@
 ;;   (interactive)
 ;;   (switch-to-buffer "*scratch*"))
 
-(define-key global-map [f9] 
+(define-key global-map [f9]
   (lambda ()
     (interactive)
     (switch-to-buffer "*scratch*")
@@ -38,7 +39,7 @@
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 (if (fboundp 'tool-bar-mode)   (tool-bar-mode -1))
 (if (fboundp 'menu-bar-mode)   (menu-bar-mode -1))
- 
+
 
 (global-set-key [f5] 'call-last-kbd-macro)
 
@@ -61,6 +62,8 @@
 ;;         "Minor mode for incremental blame for Git." t)))
 
 (require 'magit)
+;(require 'magit-blame)
+(add-to-list 'Info-default-directory-list "/home/kiru/emacs/magit/share/info/")
 (define-key global-map [f6] 'magit-status)
 
 
@@ -69,6 +72,13 @@
 (setq-default tab-width 4)
 (setq-default indent-tabs-mode nil)
 
+; karl at wmt uses tabs
+; this will help avoid http://www.emacswiki.org/emacs/TabsSpacesBoth
+(add-hook 'ruby-mode-hook
+              (lambda ()
+                (setq indent-tabs-mode t)
+                ))
+;(setq ruby-indent-tabs-mode t)
 
 ; http://www.emacs.uniyar.ac.ru/doc/em24h/emacs100.htm
 (setq show-paren-mode t)
@@ -92,11 +102,11 @@
 	 ))
 
 ; lines
-(setq scroll-step 1) 
+(setq scroll-step 1)
 (line-number-mode 1)
 (column-number-mode 1)
 
-; backup 
+; backup
 (setq make-backup-files t)
 (setq version-control t)
 (setq backup-directory-alist (quote ((".*" . "~/.emacs_backups/"))))
@@ -126,7 +136,6 @@
  ;; If there is more than one, they won't work right.
  '(blink-cursor-mode nil)
  '(bmkp-last-as-first-bookmark-file "~/.emacs.bmk")
- '(py-shell-switch-buffers-on-execute 1)
  '(vc-follow-symlinks nil))
 
 (defun alt-colors-2 ()
@@ -136,12 +145,12 @@
 	 (set-cursor-color "DarkSlateBlue")
 	 (set-border-color "DimGray")
 	 (set-mouse-color "DarkSlateBlue")
-	 
+
 	 (set-face-background 'default "DimGray")
 	 (set-face-background 'region "DarkSlateGray")
 	 (set-face-background 'highlight "DarkSlateBlue")
 	 (set-face-background 'modeline "DarkSlateBlue") ;;; CornflowerBlue")
-	 
+
 	 (set-face-foreground 'default "LightGray")
 	 (set-face-foreground 'region "Ivory")
 	 (set-face-foreground 'highlight "LightGray")  ;;; DimGray")
@@ -184,7 +193,7 @@
 ; http://common-lisp.net/project/slime/doc/html/Installation.html#Installation
 ; slime
 
-; installation: 
+; installation:
 ; apt-get install sbcl sbcl-doc sbcl-source slime
 
 ; bookmark: [transcript of marco baringer's slime movie]
@@ -321,7 +330,7 @@
      (setq exec-path (cons "c:/users/kirath/cygwin/bin/" exec-path))
      (require 'cygwin-mount)
      (cygwin-mount-activate)
-     
+
      ; Replace DOS shell with Cygwin Bash Shell
      (add-hook 'comint-output-filter-functions
                'shell-strip-ctrl-m nil t)
@@ -505,14 +514,14 @@
                   :width normal 
                   :family "outline-consolas"))))))
 
-(require 'python-mode)
-;(require 'ipython)
-(setq py-shell-name "ipython")
-(setq ipython-command "/usr/bin/ipython")
+;; (require 'python-mode)
+;; ;(require 'ipython)
+;; (setq py-shell-name "ipython")
+;; (setq ipython-command "/usr/bin/ipython")
 
-;(setq py-python-command-args '("-pylab" "-colors" "LightBG"))
-;(setq-default py-python-command-args '("--colors=LightBG"))
-(setq-default py-python-command-args '("--colors=Linux"))
+;; ;(setq py-python-command-args '("-pylab" "-colors" "LightBG"))
+;; ;(setq-default py-python-command-args '("--colors=LightBG"))
+;; (setq-default py-python-command-args '("--colors=Linux"))
 
 
 ;experimental
@@ -677,12 +686,12 @@
 
 ;; IMAP
 (setq elmo-imap4-default-server "imap.gmail.com")
-(setq elmo-imap4-default-user "kulalosai@gmail.com") 
-(setq elmo-imap4-default-authenticate-type 'clear) 
+(setq elmo-imap4-default-user "kulalosai@gmail.com")
+(setq elmo-imap4-default-authenticate-type 'clear)
 (setq elmo-imap4-default-port '993)
 (setq elmo-imap4-default-stream-type 'ssl)
 
-(setq elmo-imap4-use-modified-utf7 t) 
+(setq elmo-imap4-use-modified-utf7 t)
 
 ;; SMTP
 (setq wl-smtp-connection-type 'starttls)
@@ -697,7 +706,7 @@
 (setq wl-draft-folder "%[Gmail]/Drafts") ; Gmail IMAP
 (setq wl-trash-folder "%[Gmail]/Trash")
 
-(setq wl-folder-check-async t) 
+(setq wl-folder-check-async t)
 
 (setq elmo-imap4-use-modified-utf7 t)
 
@@ -728,7 +737,7 @@
 
 ;; uniquify: unique buffer names
 (require 'uniquify) ;; make buffer names more unique
-(setq 
+(setq
   uniquify-buffer-name-style 'post-forward
   uniquify-separator ":"
   uniquify-after-kill-buffer-p t
@@ -837,10 +846,18 @@
 (key-chord-define-global "xo" 'other-window)
 (key-chord-define-global "xb" 'ibuffer)
 (key-chord-define-global "fk" 'kill-region)
+(key-chord-define-global "zl" 'insert-console-log)
 ;(key-chord-define-global "fs" 'save-buffer)
 ;(key-chord-define-global "fb" 'ido-switch-buffer)
 
 (global-set-key "\C-cr" 'remember)
+
+(defun insert-console-log ()
+  "Insert 'console.log' into buffer"
+  (interactive)
+  (insert "console.log()")
+  (backward-char)
+  )
 
 ; http://orgmode.org/worg/org-hacks.html
 (defun my-org-extract-link ()
@@ -963,9 +980,9 @@
 
     (erc-track-switch-buffer 1) ;; yes: switch to last active
     (when (y-or-n-p "Start ERC? ") ;; no: maybe start ERC
-      (erc :server "irc.freenode.net" 
-           :port 6667 
-           :nick "kirubakaran" 
+      (erc :server "irc.freenode.net"
+           :port 6667
+           :nick "kirubakaran"
            :full-name "kirubakaran athmanathan")
       )))
 
@@ -979,7 +996,7 @@
 (eval-after-load 'ruby-mode
   '(add-hook 'ruby-mode-hook 'inf-ruby-keys))
 (inf-ruby)
-(setq ruby-indent-level 2)
+(setq ruby-indent-level 4)
 
 ; Mark Down
 ; http://jblevins.org/projects/markdown-mode/
@@ -999,6 +1016,7 @@
       '(auto-cleanup)) ;; automatically clean up bad whitespace
 (setq whitespace-style
       '(trailing space-before-tab indentation empty space-after-tab)) ;; only show bad whitespace
+(setq coffee-tab-width 2)
 
 ; word-count
 (defun wc nil "Count words in buffer"
@@ -1032,7 +1050,7 @@
    (concat "\n*** " (format-time-string "%b %d (%a)") "\n"
            "**** todo\n"
            "**** done\n"
-           "**** worry-later\n"
+           "**** tackle-later\n"
            "**** freewriting\n"
            "     " (my-date-str) "\n"
            "     \n"
@@ -1090,20 +1108,22 @@
 (setq global-auto-revert-non-file-buffers t)
 (setq auto-revert-verbose nil)
 
-;; full screen magit-status
+;; ;; full screen magit-status
 
-(defadvice magit-status (around magit-fullscreen activate)
-  (window-configuration-to-register :magit-fullscreen)
-  ad-do-it
-  (delete-other-windows))
+;; (defadvice magit-status (around magit-fullscreen activate)
+;;   (window-configuration-to-register :magit-fullscreen)
+;;   ad-do-it
+;;   (delete-other-windows))
 
-(defun magit-quit-session ()
-  "Restores the previous window configuration and kills the magit buffer"
-  (interactive)
-  (kill-buffer)
-  (jump-to-register :magit-fullscreen))
+;; (defun magit-quit-session ()
+;;   "Restores the previous window configuration and kills the magit buffer"
+;;   (interactive)
+;;   (kill-buffer)
+;;   (jump-to-register :magit-fullscreen))
 
-(define-key magit-status-mode-map (kbd "q") 'magit-quit-session)
+;; (define-key magit-status-mode-map (kbd "q") 'magit-quit-session)
+
+(setq magit-status-buffer-switch-function 'switch-to-buffer)
 
 ;; easily move lines up and down
 
@@ -1208,3 +1228,84 @@
 )
 (global-set-key "\C-cz" 'show-file-name)
 
+;; --- python-mode setup with ipython --- [begin]
+;; setting up python-mode afresh [May 12, 2013]
+(setq py-install-directory (concat emacs-root "emacs/" "python-mode.el-6.1.1"))
+(add-to-list 'load-path py-install-directory)
+(require 'python-mode)
+
+; http://www.jesshamrick.com/2012/09/18/emacs-as-a-python-ide/
+
+(setq-default py-shell-name "ipython")
+(setq-default py-which-bufname "*IPython*")
+(setq py-python-command-args
+      '("--gui=wx" "--pylab=wx" "-colors" "Linux"))
+(setq py-force-py-shell-name-p t)
+
+; switch to the interpreter after executing code
+;(setq py-shell-switch-buffers-on-execute-p t)
+;(setq py-switch-buffers-on-execute-p t)
+; don't split windows
+(setq py-split-windows-on-execute-p nil)
+; try to automagically figure out indentation
+(setq py-smart-indentation t)
+;; --- python-mode setup with ipython --- [end]
+
+; flymake python
+; http://vaab.blog.kal.fr/2012/09/20/emacs-and-flymake-for-python-javascript-php-rst/
+
+;temporarily disabling it while i work on existing code in fp project
+;(add-hook 'find-file-hook 'flymake-find-file-hook)
+(when (load "flymake" t)
+  (defun flymake-pycheckers-init ()
+    (let* ((temp-file (flymake-init-create-temp-buffer-copy
+                    'flymake-create-temp-inplace))
+        (local-file (file-relative-name
+                     temp-file
+                     (file-name-directory buffer-file-name))))
+      (list "~/emacs/pycheckers.py"  (list local-file))))
+
+  (add-to-list 'flymake-allowed-file-name-masks
+            '("\\.py\\'" flymake-pycheckers-init)))
+(require 'flymake-cursor)
+
+(require 'highlight-chars)
+(global-set-key (kbd "<f11>") 'hc-toggle-highlight-tabs)
+(global-set-key (kbd "S-<f11>") 'hc-toggle-highlight-trailing-whitespace)
+
+;make emacs work with python virtual environments
+;https://github.com/aculich/virtualenv.el
+(setenv "WORKON_HOME" "/home/kiru/pyenv")
+(require 'virtualenv)
+
+(defun dired-keys-additional ()
+  (local-set-key (kbd "C-c C-e") 'dired-toggle-read-only))
+
+(add-hook 'dired-mode-hook 'dired-keys-additional)
+
+(require 'ace-jump-mode)
+(define-key global-map (kbd "C-S-s") 'ace-jump-mode)
+
+; Tearing out the Emacs windows manager
+; http://compsoc.man.ac.uk/~shep/tearing-out-the-emacs-window-manager.html
+;; (set 'pop-up-frames 'graphic-only)
+;; (set 'gdb-use-separate-io-buffer nil)
+;; (set 'gdb-many-windows nil)
+;; (set 'mouse-autoselect-window nil)
+;; (set 'focus-follows-mouse nil)
+;; (set 'ido-decorations '("\n-> " "" "\n   " "\n   ..." "[" "]" " [No match]"
+;;                         " [Matched]" " [Not readable]" " [Too big]"
+;;                         " [Confirm]"))
+;; (server-start)
+
+;; (if (daemonp)
+;;     (add-hook 'after-make-frame-functions
+;;               '(lambda (f)
+;;                  (with-selected-frame f
+;;                    (when (window-system f) (alt-colors-1))))))
+
+; omit uninteresting files in a dired buffer with Alt-o
+(add-hook 'dired-load-hook '(lambda () (require 'dired-x)))
+(setq dired-omit-mode t)
+(setq dired-omit-files
+          (concat dired-omit-files "\\|API_PID-.?"))
