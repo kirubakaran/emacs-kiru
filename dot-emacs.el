@@ -1,8 +1,8 @@
 (message "*****  .emacs loading  *****")
 
 ; -------------------- stevey bgn --------------------
-
-(defvar emacs-root
+ 
+(defvar emacs-root 
   (if (eq system-type 'windows-nt)
       "C:/users/kirath/"
       "~/"))
@@ -136,6 +136,7 @@
  ;; If there is more than one, they won't work right.
  '(blink-cursor-mode nil)
  '(bmkp-last-as-first-bookmark-file "~/.emacs.bmk")
+ '(py-shell-switch-buffers-on-execute 1)
  '(vc-follow-symlinks nil))
 
 (defun alt-colors-2 ()
@@ -193,7 +194,7 @@
 ; http://common-lisp.net/project/slime/doc/html/Installation.html#Installation
 ; slime
 
-; installation:
+; installation: 
 ; apt-get install sbcl sbcl-doc sbcl-source slime
 
 ; bookmark: [transcript of marco baringer's slime movie]
@@ -330,7 +331,7 @@
      (setq exec-path (cons "c:/users/kirath/cygwin/bin/" exec-path))
      (require 'cygwin-mount)
      (cygwin-mount-activate)
-
+     
      ; Replace DOS shell with Cygwin Bash Shell
      (add-hook 'comint-output-filter-functions
                'shell-strip-ctrl-m nil t)
@@ -998,7 +999,7 @@
 (eval-after-load 'ruby-mode
   '(add-hook 'ruby-mode-hook 'inf-ruby-keys))
 (inf-ruby)
-(setq ruby-indent-level 4)
+(setq ruby-indent-level 2)
 
 ; Mark Down
 ; http://jblevins.org/projects/markdown-mode/
