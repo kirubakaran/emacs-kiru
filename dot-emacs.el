@@ -1314,6 +1314,7 @@
           (concat dired-omit-files "\\|API_PID-.?"))
 
 ; projectile
+(require 'projectile)
 (projectile-global-mode)
 
 ; ido mode, great as it is, isn't great enough
@@ -1326,3 +1327,10 @@
 ;; disable ido faces to see flx highlights.
 (setq ido-use-faces nil)
 (setq gc-cons-threshold 20000000)
+
+;; ack
+(require 'ack-and-a-half)
+(defalias 'ack 'ack-and-a-half)
+(defalias 'ack-same 'ack-and-a-half-same)
+(defalias 'ack-find-file 'ack-and-a-half-find-file)
+(defalias 'ack-find-file-same 'ack-and-a-half-find-file-same)
