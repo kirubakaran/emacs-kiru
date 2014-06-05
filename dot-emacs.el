@@ -898,9 +898,11 @@
       (add-to-list 'package-archives
                    '("elpa" . "http://tromey.com/elpa/"))
       ;; Add the user-contributed repository
+      ;; (add-to-list 'package-archives
+      ;;              '("marmalade" . "http://marmalade-repo.org/packages/"))
+      ;; using melpa instead of marmalade [May 28, 2014 10:02] 
       (add-to-list 'package-archives
-                   '("marmalade" . "http://marmalade-repo.org/packages/"))
-
+                   '("melpa" . "http://melpa.milkbox.net/packages/") t)
       (eval-after-load "org"
         '(progn
            (org_setup)
@@ -1309,3 +1311,6 @@
 (setq dired-omit-mode t)
 (setq dired-omit-files
           (concat dired-omit-files "\\|API_PID-.?"))
+
+; projectile
+(projectile-global-mode)
