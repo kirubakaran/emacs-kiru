@@ -1315,3 +1315,14 @@
 
 ; projectile
 (projectile-global-mode)
+
+; ido mode, great as it is, isn't great enough
+; this project has done a great job of fixing this
+; https://github.com/lewang/flx
+(require 'flx-ido)
+(ido-mode 1)
+(ido-everywhere 1)
+(flx-ido-mode 1)
+;; disable ido faces to see flx highlights.
+(setq ido-use-faces nil)
+(setq gc-cons-threshold 20000000)
