@@ -1291,21 +1291,27 @@
 
 ; Tearing out the Emacs windows manager
 ; http://compsoc.man.ac.uk/~shep/tearing-out-the-emacs-window-manager.html
-;; (set 'pop-up-frames 'graphic-only)
-;; (set 'gdb-use-separate-io-buffer nil)
-;; (set 'gdb-many-windows nil)
-;; (set 'mouse-autoselect-window nil)
-;; (set 'focus-follows-mouse nil)
-;; (set 'ido-decorations '("\n-> " "" "\n   " "\n   ..." "[" "]" " [No match]"
-;;                         " [Matched]" " [Not readable]" " [Too big]"
-;;                         " [Confirm]"))
-;; (server-start)
+(set 'pop-up-frames 'graphic-only)
+(set 'gdb-use-separate-io-buffer nil)
+(set 'gdb-many-windows nil)
+(set 'mouse-autoselect-window nil)
+(set 'focus-follows-mouse nil)
+(set 'ido-decorations '("\n-> " "" "\n   " "\n   ..." "[" "]" " [No match]"
+                        " [Matched]" " [Not readable]" " [Too big]"
+                        " [Confirm]"))
+(server-start)
 
-;; (if (daemonp)
-;;     (add-hook 'after-make-frame-functions
-;;               '(lambda (f)
-;;                  (with-selected-frame f
-;;                    (when (window-system f) (alt-colors-1))))))
+;; apply theme to new frame
+(defun apply-theme (frame)
+  (select-frame frame)
+  (if (window-system frame)
+      (progn
+        (alt-colors-1)
+        (when (string= system-name "hulk")
+          (set-default-font "Inconsolata-16")))
+    ))
+
+(add-hook 'after-make-frame-functions 'apply-theme)
 
 ; omit uninteresting files in a dired buffer with Alt-o
 (add-hook 'dired-load-hook '(lambda () (require 'dired-x)))
@@ -1313,23 +1319,23 @@
 (setq dired-omit-files
           (concat dired-omit-files "\\|API_PID-.?"))
 
-; projectile
-(require 'projectile)
-(projectile-global-mode)
+; http://stackoverflow.com/q/11127109
+(add-hook 'after-init-hook 'my-after-init-hook)
+(defun my-after-init-hook ()
+  (progn
+    (projectile-global-mode)
+    ; ido mode, great as it is, isn't great enough
+    ; this project has done a great job of fixing this
+    ; https://github.com/lewang/flx
+    (ido-mode 1)
+    (ido-everywhere 1)
+    (flx-ido-mode 1)))
 
-; ido mode, great as it is, isn't great enough
-; this project has done a great job of fixing this
-; https://github.com/lewang/flx
-(require 'flx-ido)
-(ido-mode 1)
-(ido-everywhere 1)
-(flx-ido-mode 1)
 ;; disable ido faces to see flx highlights.
 (setq ido-use-faces nil)
 (setq gc-cons-threshold 20000000)
 
 ;; ack
-(require 'ack-and-a-half)
 (defalias 'ack 'ack-and-a-half)
 (defalias 'ack-same 'ack-and-a-half-same)
 (defalias 'ack-find-file 'ack-and-a-half-find-file)
