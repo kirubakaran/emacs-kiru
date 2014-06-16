@@ -1121,7 +1121,8 @@
 (defun magit-quit-session ()
   "Restores the previous window configuration and kills the magit buffer"
   (interactive)
-  (kill-buffer)
+  ;(kill-buffer)
+  (delete-frame) ;since i am now using xmonad to manage emacs frames
   (jump-to-register :magit-fullscreen))
 
 (define-key magit-status-mode-map (kbd "q") 'magit-quit-session)
