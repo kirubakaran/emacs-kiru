@@ -7,8 +7,37 @@
       "C:/users/kirath/"
       "~/"))
 
-(add-to-list 'load-path (concat emacs-root "emacs"))
-;(add-to-list 'load-path (concat emacs-root "emacs/magit/share/emacs/site-lisp"))
+(add-to-list 'load-path (concat emacs-root "emacs-misc"))
+
+; ------------------------------------------------------------
+; i'm tired of installing packages one by one
+; http://stackoverflow.com/a/10093312
+; http://stackoverflow.com/a/10095853
+
+(setq package-list '(magit
+                     highlight-indentation
+                     pp-c-l
+                     ))
+
+(setq package-archives '(("elpa" . "http://tromey.com/elpa/")
+                         ("melpa" . "http://melpa.milkbox.net/packages/")))
+
+; activate all the packages (in particular autoloads)
+(package-initialize)
+
+; fetch the list of packages available 
+(unless package-archive-contents
+  (package-refresh-contents))
+
+; install the missing packages
+(dolist (package package-list)
+  (unless (package-installed-p package)
+    (if (y-or-n-p (format "Package %s is missing. Install it? " package))
+        (package-install package))))
+; ------------------------------------------------------------
+
+;; activate installed packages
+(package-initialize)
 
 (require 'cl)
 
@@ -61,9 +90,9 @@
 ;;       (autoload 'git-blame-mode "git-blame"
 ;;         "Minor mode for incremental blame for Git." t)))
 
-(require 'magit)
+;(require 'magit) ;;using package manager
 ;(require 'magit-blame)
-(add-to-list 'Info-default-directory-list "/home/kiru/emacs/magit/share/info/")
+;(add-to-list 'Info-default-directory-list "/home/kiru/emacs/magit/share/info/")
 (define-key global-map [f6] 'magit-status)
 
 
@@ -562,12 +591,15 @@
    "\n"))
 
 
-;escreen
+; escreen
+;; 2014-07-04 not needed as i now use xmonad to manage
+;; even emacs frames
 
-(load "escreen")
-(escreen-install)
-(global-set-key (kbd "<s-prior>") 'escreen-goto-prev-screen)
-(global-set-key (kbd "<s-next>")  'escreen-goto-next-screen)
+;; (load "escreen")
+;; (escreen-install)
+;; (global-set-key (kbd "<s-prior>") 'escreen-goto-prev-screen)
+;; (global-set-key (kbd "<s-next>")  'escreen-goto-next-screen)
+
 
 (delete-selection-mode t)
 
@@ -648,8 +680,7 @@
 ; http://www.emacswiki.org/emacs/PrettyControlL
 (defvar pp^L-^L-string-function
   (lambda (win) (make-string (1- (window-width win)) ?_)))
-(require 'pp-c-l)
-(pretty-control-l-mode 1)
+;(require 'pp-c-l) ;;using package manager
 
 (put 'set-goal-column 'disabled nil)
 
@@ -810,7 +841,7 @@
 
 (put 'narrow-to-region 'disabled nil)
 
-(require 'highlight-indentation)
+;(require 'highlight-indentation) ;; using package manager
 (global-set-key "\C-ch" 'highlight-indentation)
 
 ;Erlang
@@ -1122,7 +1153,7 @@
   "Restores the previous window configuration and kills the magit buffer"
   (interactive)
   ;(kill-buffer)
-  (delete-frame) ;since i am now using xmonad to manage emacs frames
+  (delete-frame) ;since i am now ,using xmonad to manage emacs frames
   (jump-to-register :magit-fullscreen))
 
 (define-key magit-status-mode-map (kbd "q") 'magit-quit-session)
@@ -1330,7 +1361,10 @@
     ; https://github.com/lewang/flx
     (ido-mode 1)
     (ido-everywhere 1)
-    (flx-ido-mode 1)))
+    (flx-ido-mode 1)
+    (pretty-control-l-mode 1)
+    )
+  )
 
 ;; disable ido faces to see flx highlights.
 (setq ido-use-faces nil)
