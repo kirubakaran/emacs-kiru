@@ -1,7 +1,5 @@
 (message "*****  .emacs loading  *****")
 
-; -------------------- stevey bgn --------------------
- 
 (defvar emacs-root 
   (if (eq system-type 'windows-nt)
       "C:/users/kirath/"
@@ -10,13 +8,29 @@
 (add-to-list 'load-path (concat emacs-root "emacs-misc"))
 
 ; ------------------------------------------------------------
-; i'm tired of installing packages one by one
+; Install missing packages
 ; http://stackoverflow.com/a/10093312
 ; http://stackoverflow.com/a/10095853
 
 (setq package-list '(magit
                      highlight-indentation
                      pp-c-l
+                     dired+
+                     bookmark+
+                     key-chord
+                     ledger-mode
+                     jinja2-mode
+                     inf-ruby
+                     coffee-mode
+                     eproject
+                     py-autopep8
+                     highlight-chars
+                     virtualenv
+                     virtualenvwrapper
+                     ace-jump-mode
+                     ack-and-a-half
+                     js2-mode
+                     yaml-mode
                      ))
 
 (setq package-archives '(("elpa" . "http://tromey.com/elpa/")
@@ -36,20 +50,11 @@
         (package-install package))))
 ; ------------------------------------------------------------
 
-;; activate installed packages
-(package-initialize)
-
 (require 'cl)
 
 ;(global-set-key "\C-x\C-m" 'execute-extended-command) ;use chord xm
-
 ;(define-key global-map [f8] 'kill-region) ;use chord fk
 (global-set-key "\C-w" 'backward-kill-word)
-
-;; (define-key global-map [f9] 'switch-to-scratch)
-;; (defun switch-to-scratch ()
-;;   (interactive)
-;;   (switch-to-buffer "*scratch*"))
 
 (define-key global-map [f9]
   (lambda ()
@@ -58,43 +63,12 @@
     )
   )
 
-;(global-set-key "\C-w" 'my-custom-kill)
-;(defun my-custom-kill ()
-;  (interactive "p")
-;  (if mark-active
-;      'kill-region
-;    'backward-kill-word))
-
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 (if (fboundp 'tool-bar-mode)   (tool-bar-mode -1))
 (if (fboundp 'menu-bar-mode)   (menu-bar-mode -1))
 
-
 (global-set-key [f5] 'call-last-kbd-macro)
-
-; -------------------- stevey end --------------------
-
-; git
-
-; http://www.emacswiki.org/cgi-bin/wiki/Git
-;; (if (eq system-type 'windows-nt)
-;;     (progn
-;;       (require 'magit)
-;;       (define-key global-map [f6] 'magit-status))
-;;     (progn
-;;       (message "i am loading git")
-;;       (add-to-list 'load-path (expand-file-name "/usr/share/doc/git-core/contrib/emacs"))
-;;       (require 'vc-git)
-;;       (when (featurep 'vc-git) (add-to-list 'vc-handled-backends 'git))
-;;       (require 'git)
-;;       (autoload 'git-blame-mode "git-blame"
-;;         "Minor mode for incremental blame for Git." t)))
-
-;(require 'magit) ;;using package manager
-;(require 'magit-blame)
-;(add-to-list 'Info-default-directory-list "/home/kiru/emacs/magit/share/info/")
-(define-key global-map [f6] 'magit-status)
-
+(global-set-key [f6] 'magit-status)
 
 ; tab
 ; http://student.northpark.edu/pemente/emacs_tabs.htm
@@ -152,10 +126,6 @@
 (show-paren-mode t)
 ;(setq show-paren-style 'expression)
 (setq show-paren-style 'parenthesis)
-
-
-; http://infolab.stanford.edu/~manku/dotemacs.html
-(transient-mark-mode t) ; highlight marked region
 
 ; http://www.math.umn.edu/~garrett/shortest/emacs_customization.html
 (custom-set-variables
@@ -680,7 +650,6 @@
 ; http://www.emacswiki.org/emacs/PrettyControlL
 (defvar pp^L-^L-string-function
   (lambda (win) (make-string (1- (window-width win)) ?_)))
-;(require 'pp-c-l) ;;using package manager
 
 (put 'set-goal-column 'disabled nil)
 
@@ -841,15 +810,15 @@
 
 (put 'narrow-to-region 'disabled nil)
 
-;(require 'highlight-indentation) ;; using package manager
 (global-set-key "\C-ch" 'highlight-indentation)
 
 ;Erlang
 ;http://parijatmishra.wordpress.com/2008/08/15/up-and-running-with-emacs-erlang-and-distel/
-(push "/home/kiru/emacs/distel/elisp" load-path)
-(require 'erlang-start)
-(require 'distel)
-(distel-setup)
+;; temporarily disabling this [Jul 04, 2014 12:05] 
+;; (push "/home/kiru/emacs-misc/distel/elisp" load-path)
+;; (require 'erlang-start)
+;; (require 'distel)
+;; (distel-setup)
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -958,7 +927,6 @@
 (setq eshell-smart-space-goes-to-end t)
 
 ; use dpkg -L ledger-el to see where it is installed
-(require 'ledger)
 ;; 2012-jun-18 - note: i couldn't find ledger.el in the system
 ;; 2012-jun-18 - so i copied it from github /usr/share/emacs/site-lisp/
 (add-hook
@@ -974,9 +942,6 @@
 ;;   '(progn
 ;;      (color-theme-initialize)
 ;;      (color-theme-robin-hood)))
-
-;https://raw.github.com/paradoxxxzero/jinja2-mode/master/jinja2-mode.el
-(require 'jinja2-mode)
 
 ; O'Reilly - Writing GNU Emacs Extensions -- begin
 
@@ -1094,12 +1059,6 @@
 (define-key global-map [f12] 'start-day)
 
 ; jrockway's eproject
-(add-to-list 'load-path (concat emacs-root "emacs/eproject"))
-(require 'eproject)
-(require 'eproject-extras)
-(define-project-type rails (generic)
-  (or (look-for "Gemfile"))
-  :relevant-files ("\.py$" "\.js$" "\.css$"))
 
 ; sass
 ;; (setq exec-path (cons (expand-file-name "~/.rvm/gems/ruby-1.9.3-p194/bin") exec-path))
@@ -1156,7 +1115,7 @@
   (delete-frame) ;since i am now ,using xmonad to manage emacs frames
   (jump-to-register :magit-fullscreen))
 
-(define-key magit-status-mode-map (kbd "q") 'magit-quit-session)
+
 
 (setq magit-status-buffer-switch-function 'switch-to-buffer)
 
@@ -1263,12 +1222,6 @@
 )
 (global-set-key "\C-cz" 'show-file-name)
 
-;; --- python-mode setup with ipython --- [begin]
-;; setting up python-mode afresh [May 12, 2013]
-(setq py-install-directory (concat emacs-root "emacs/" "python-mode.el-6.1.1"))
-(add-to-list 'load-path py-install-directory)
-(require 'python-mode)
-
 ; http://www.jesshamrick.com/2012/09/18/emacs-as-a-python-ide/
 
 (setq-default py-shell-name "ipython")
@@ -1291,34 +1244,31 @@
 
 ;temporarily disabling it while i work on existing code in fp project
 ;(add-hook 'find-file-hook 'flymake-find-file-hook)
-(when (load "flymake" t)
-  (defun flymake-pycheckers-init ()
-    (let* ((temp-file (flymake-init-create-temp-buffer-copy
-                    'flymake-create-temp-inplace))
-        (local-file (file-relative-name
-                     temp-file
-                     (file-name-directory buffer-file-name))))
-      (list "~/emacs/pycheckers.py"  (list local-file))))
+;; (when (load "flymake" t)
+;;   (defun flymake-pycheckers-init ()
+;;     (let* ((temp-file (flymake-init-create-temp-buffer-copy
+;;                     'flymake-create-temp-inplace))
+;;         (local-file (file-relative-name
+;;                      temp-file
+;;                      (file-name-directory buffer-file-name))))
+;;       (list "~/emacs/pycheckers.py"  (list local-file))))
 
-  (add-to-list 'flymake-allowed-file-name-masks
-            '("\\.py\\'" flymake-pycheckers-init)))
-(require 'flymake-cursor)
+;;   (add-to-list 'flymake-allowed-file-name-masks
+;;             '("\\.py\\'" flymake-pycheckers-init)))
+;; (require 'flymake-cursor)
 
-(require 'highlight-chars)
 (global-set-key (kbd "<f11>") 'hc-toggle-highlight-tabs)
 (global-set-key (kbd "S-<f11>") 'hc-toggle-highlight-trailing-whitespace)
 
 ;make emacs work with python virtual environments
 ;https://github.com/aculich/virtualenv.el
 (setenv "WORKON_HOME" "/home/kiru/pyenv")
-(require 'virtualenv)
 
 (defun dired-keys-additional ()
   (local-set-key (kbd "C-c C-e") 'dired-toggle-read-only))
 
 (add-hook 'dired-mode-hook 'dired-keys-additional)
 
-(require 'ace-jump-mode)
 (define-key global-map (kbd "C-S-s") 'ace-jump-mode)
 
 ; Tearing out the Emacs windows manager
@@ -1346,7 +1296,7 @@
 (add-hook 'after-make-frame-functions 'apply-theme)
 
 ; omit uninteresting files in a dired buffer with Alt-o
-(add-hook 'dired-load-hook '(lambda () (require 'dired-x)))
+;(add-hook 'dired-load-hook '(lambda () (require 'dired-x)))
 (setq dired-omit-mode t)
 (setq dired-omit-files
           (concat dired-omit-files "\\|API_PID-.?"))
@@ -1363,6 +1313,10 @@
     (ido-everywhere 1)
     (flx-ido-mode 1)
     (pretty-control-l-mode 1)
+    (define-key magit-status-mode-map (kbd "q") 'magit-quit-session)
+    (define-project-type rails (generic)
+      (or (look-for "Gemfile"))
+      :relevant-files ("\.rb$" "\.js$" "\.css$"))
     )
   )
 
