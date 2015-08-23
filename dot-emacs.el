@@ -1,6 +1,6 @@
 (message "*****  .emacs loading  *****")
 
-(defvar emacs-root 
+(defvar emacs-root
   (if (eq system-type 'windows-nt)
       "C:/users/kirath/"
       "~/"))
@@ -31,6 +31,7 @@
                      ack-and-a-half
                      js2-mode
                      yaml-mode
+                     rainbow-blocks
                      ))
 
 (setq package-archives '(("elpa" . "http://tromey.com/elpa/")
@@ -39,7 +40,7 @@
 ; activate all the packages (in particular autoloads)
 (package-initialize)
 
-; fetch the list of packages available 
+; fetch the list of packages available
 (unless package-archive-contents
   (package-refresh-contents))
 
@@ -193,7 +194,7 @@
 ; http://common-lisp.net/project/slime/doc/html/Installation.html#Installation
 ; slime
 
-; installation: 
+; installation:
 ; apt-get install sbcl sbcl-doc sbcl-source slime
 
 ; bookmark: [transcript of marco baringer's slime movie]
@@ -264,17 +265,17 @@
 ;; (autoload 'pgg-make-temp-file "pgg" "PGG")
 ;; (autoload 'pgg-gpg-decrypt-region "pgg-gpg" "PGG GnuPG")
 ;; (define-generic-mode 'gpg-file-mode
-;;   (list ?#) 
+;;   (list ?#)
 ;;   nil nil
 ;;   '(".gpg\\'" ".gpg-encrypted\\'")
 ;;   (list (lambda ()
 ;; 	    (add-hook 'before-save-hook
-;;                       (lambda () 
+;;                       (lambda ()
 ;;                         (let ((pgg-output-buffer (current-buffer)))
 ;;                           (pgg-gpg-encrypt-region (point-min) (point-max)
 ;;                                                   (list pgg-gpg-user-id))))
 ;;                       nil t)
-;; 	    (add-hook 'after-save-hook 
+;; 	    (add-hook 'after-save-hook
 ;; 		      (lambda ()
 ;;                         (let ((pgg-output-buffer (current-buffer)))
 ;;                           (pgg-gpg-decrypt-region (point-min) (point-max)))
@@ -298,17 +299,17 @@
 
 ;(defadvice switch-to-buffer (after name-the-frame (arg))
 ;  (set-frame-name (concat (buffer-name) " - emacs")))
-;  
+;
 ;(ad-activate 'switch-to-buffer)
 
 ; a method that wasn't sufficient:
-;(global-set-key [f10] 
+;(global-set-key [f10]
 ;                '(lambda ()
 ;                   (interactive)
 ;                   (set-frame-name (concat "emacs : " (buffer-name)))))
 
 ; a method that didn't work:
-;(global-set-key "\C-xb" 
+;(global-set-key "\C-xb"
 ;                '(lambda (buffer &optional norecord)
 ;                     (interactive)
 ;                     (set-frame-name (concat "emacs : " (buffer-name)))
@@ -330,7 +331,7 @@
      (setq exec-path (cons "c:/users/kirath/cygwin/bin/" exec-path))
      (require 'cygwin-mount)
      (cygwin-mount-activate)
-     
+
      ; Replace DOS shell with Cygwin Bash Shell
      (add-hook 'comint-output-filter-functions
                'shell-strip-ctrl-m nil t)
@@ -420,7 +421,7 @@
 (defun copy-line (&optional arg)
   "Save current line into Kill-Ring without mark the line "
   (interactive "P")
-  (let ((beg (line-beginning-position)) 
+  (let ((beg (line-beginning-position))
      	(end (line-end-position arg)))
     (copy-region-as-kill beg end)))
 
@@ -499,19 +500,19 @@
      ;; If you edit it by hand, you could mess it up, so be careful.
      ;; Your init file should contain only one such instance.
      ;; If there is more than one, they won't work right.
-     '(default ((t 
-                 (:stipple nil 
-                  :background "DarkSlateGray" 
-                  :foreground "Wheat" 
-                  :inverse-video nil 
-                  :box nil 
-                  :strike-through nil 
-                  :overline nil 
-                  :underline nil 
-                  :slant normal 
-                  :weight normal 
-                  :height 140 
-                  :width normal 
+     '(default ((t
+                 (:stipple nil
+                  :background "DarkSlateGray"
+                  :foreground "Wheat"
+                  :inverse-video nil
+                  :box nil
+                  :strike-through nil
+                  :overline nil
+                  :underline nil
+                  :slant normal
+                  :weight normal
+                  :height 140
+                  :width normal
                   :family "outline-consolas"))))))
 
 ;; (require 'python-mode)
@@ -540,20 +541,20 @@
   (interactive)
   (setq cur_line (thing-at-point 'line))
   ;delete trailing newline
-  (if (string= 
-       (substring cur_line -1) 
+  (if (string=
+       (substring cur_line -1)
        "\n")
       (progn
-        (setq cur_line 
+        (setq cur_line
               (substring cur_line 0 (- (length cur_line) 1)))))
   (setq ins_line (concat "| " cur_line " |\n"))
-  (setq border_line 
-        (concat "+" 
+  (setq border_line
+        (concat "+"
                 (make-string (- (length ins_line) 3) ?-)
                 "+"))
   (beginning-of-line)
   (kill-line)
-  (insert 
+  (insert
    border_line
    "\n"
    ins_line
@@ -581,7 +582,7 @@
      (0 (put-text-property
          (match-beginning 0)
          (match-end 0)
-         'face (list :background 
+         'face (list :background
                      (match-string-no-properties 0)))))))
 
 (defun hexcolour-add-to-font-lockfont-lock ()
@@ -668,7 +669,7 @@
 (setq confirm-nonexistent-file-or-buffer nil)
 
 ;; increase minibuffer size when ido completion is active
-(add-hook 'ido-minibuffer-setup-hook 
+(add-hook 'ido-minibuffer-setup-hook
           (function
            (lambda ()
              (make-local-variable 'resize-minibuffer-window-max-height)
@@ -755,8 +756,10 @@
 (require 'saveplace)                          ;; get the package
 
 ; http://garage.pimentech.net/libcommonDjango_django_emacs/
-(autoload 'django-html-mode "django-html-mode")
-(add-to-list 'auto-mode-alist '("\\.[sx]?html?\\'" . django-html-mode))
+;(autoload 'django-html-mode "django-html-mode")
+(add-to-list 'auto-mode-alist '("\\.[sx]?html?\\'" . html-mode))
+
+;(add-to-list 'auto-mode-alist '("\\.[sx]?html?\\'" . jinja2-mode))
 
 ;; ; start emacs server
 ;; ; http://ipython.scipy.org/doc/rel-0.9.1/html/config/initial_config.html
@@ -814,7 +817,7 @@
 
 ;Erlang
 ;http://parijatmishra.wordpress.com/2008/08/15/up-and-running-with-emacs-erlang-and-distel/
-;; temporarily disabling this [Jul 04, 2014 12:05] 
+;; temporarily disabling this [Jul 04, 2014 12:05]
 ;; (push "/home/kiru/emacs-misc/distel/elisp" load-path)
 ;; (require 'erlang-start)
 ;; (require 'distel)
@@ -829,6 +832,7 @@
 
 ;(load-file "/home/kiru/opt/dvc/++build/dvc-load.el")
 
+(setq dired-listing-switches "-alk")
 (require 'dired+)
 
 (global-set-key (kbd "M-/") 'hippie-expand)
@@ -873,7 +877,7 @@
 (defun org_setup ()
   (progn
     (setq org-directory "/home/kiru/Documents/org")
-    (setq org-default-notes-file 
+    (setq org-default-notes-file
           (concat org-directory "/notes.org"))
     (define-key global-map "\C-cc" 'org-capture)
     (define-key global-map "\C-cl" 'org-store-link)
@@ -901,7 +905,7 @@
       ;; Add the user-contributed repository
       ;; (add-to-list 'package-archives
       ;;              '("marmalade" . "http://marmalade-repo.org/packages/"))
-      ;; using melpa instead of marmalade [May 28, 2014 10:02] 
+      ;; using melpa instead of marmalade [May 28, 2014 10:02]
       (add-to-list 'package-archives
                    '("melpa" . "http://melpa.milkbox.net/packages/") t)
       (eval-after-load "org"
@@ -1311,8 +1315,8 @@
     ; https://github.com/lewang/flx
     (ido-mode 1)
     (ido-everywhere 1)
-    (flx-ido-mode 1)
-    (pretty-control-l-mode 1)
+    ;(flx-ido-mode 1)
+    ;(pretty-control-l-mode 1)
     (define-key magit-status-mode-map (kbd "q") 'magit-quit-session)
     (define-project-type rails (generic)
       (or (look-for "Gemfile"))
@@ -1329,3 +1333,5 @@
 (defalias 'ack-same 'ack-and-a-half-same)
 (defalias 'ack-find-file 'ack-and-a-half-find-file)
 (defalias 'ack-find-file-same 'ack-and-a-half-find-file-same)
+
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
