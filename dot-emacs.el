@@ -28,10 +28,10 @@
                      virtualenv
                      virtualenvwrapper
                      ace-jump-mode
-                     ack-and-a-half
                      js2-mode
                      yaml-mode
                      rainbow-blocks
+                     restclient
                      ))
 
 (setq package-archives '(("elpa" . "http://tromey.com/elpa/")
@@ -102,6 +102,7 @@
      (set-mouse-color "Orchid")
      (set-background-color "DarkSlateGray")
      (set-foreground-color "Wheat")
+     (blink-cursor-mode 0)
      (global-hl-line-mode 1)
 	 ))
 
@@ -134,10 +135,9 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(blink-cursor-mode nil)
- '(bmkp-last-as-first-bookmark-file "~/.emacs.bmk")
- '(py-shell-switch-buffers-on-execute 1)
- '(vc-follow-symlinks nil))
+ '(package-selected-packages
+   (quote
+    (restclient rainbow-blocks yaml-mode js2-mode virtualenvwrapper virtualenv py-autopep8 pp-c-l magit ledger-mode key-chord jinja2-mode inf-ruby highlight-indentation highlight-chars eproject dired+ coffee-mode bookmark+ ace-jump-mode))))
 
 (defun alt-colors-2 ()
   (progn
@@ -164,7 +164,8 @@
 (dired emacs-root)
 (rename-buffer "dired1")
 ;(shell)
-(find-file (concat emacs-root ".emacs"))
+;(find-file (concat emacs-root ".emacs"))
+(find-file (concat emacs-root "ppp/emacs-kiru/dot-emacs.el"))
 
 ; ----------------------------------------
 ; http://www.zafar.se/bkz/Articles/EmacsTips
@@ -828,7 +829,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(js2-function-param ((t (:foreground "lawn green")))))
+ )
 
 ;(load-file "/home/kiru/opt/dvc/++build/dvc-load.el")
 
@@ -1327,11 +1328,5 @@
 ;; disable ido faces to see flx highlights.
 (setq ido-use-faces nil)
 (setq gc-cons-threshold 20000000)
-
-;; ack
-(defalias 'ack 'ack-and-a-half)
-(defalias 'ack-same 'ack-and-a-half-same)
-(defalias 'ack-find-file 'ack-and-a-half-find-file)
-(defalias 'ack-find-file-same 'ack-and-a-half-find-file-same)
 
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
