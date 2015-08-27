@@ -1123,6 +1123,7 @@
 
 
 (setq magit-status-buffer-switch-function 'switch-to-buffer)
+(setq magit-push-always-verify nil)
 
 ;; easily move lines up and down
 
