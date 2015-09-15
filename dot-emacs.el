@@ -32,6 +32,7 @@
                      yaml-mode
                      rainbow-blocks
                      restclient
+                     ox-gfm
                      ))
 
 (setq package-archives '(("elpa" . "http://tromey.com/elpa/")
@@ -137,7 +138,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (restclient rainbow-blocks yaml-mode js2-mode virtualenvwrapper virtualenv py-autopep8 pp-c-l magit ledger-mode key-chord jinja2-mode inf-ruby highlight-indentation highlight-chars eproject dired+ coffee-mode bookmark+ ace-jump-mode))))
+    (ox-gfm restclient rainbow-blocks yaml-mode js2-mode virtualenvwrapper virtualenv py-autopep8 pp-c-l magit ledger-mode key-chord jinja2-mode inf-ruby highlight-indentation highlight-chars eproject dired+ coffee-mode bookmark+ ace-jump-mode))))
 
 (defun alt-colors-2 ()
   (progn
@@ -853,6 +854,7 @@
 (key-chord-define-global "xb" 'ibuffer)
 (key-chord-define-global "fk" 'kill-region)
 (key-chord-define-global "zl" 'insert-console-log)
+(key-chord-define-global "zk" 'insert-js-fn)
 ;(key-chord-define-global "fs" 'save-buffer)
 ;(key-chord-define-global "fb" 'ido-switch-buffer)
 
@@ -861,8 +863,16 @@
 (defun insert-console-log ()
   "Insert 'console.log' into buffer"
   (interactive)
-  (insert "console.log()")
+  (insert "console.log();")
   (backward-char)
+  (backward-char)
+  )
+
+(defun insert-js-fn ()
+  "Insert js function into buffer"
+  (interactive)
+  (insert "function () {}")
+  (backward-char)(backward-char)(backward-char)(backward-char)
   )
 
 ; http://orgmode.org/worg/org-hacks.html
@@ -1052,9 +1062,7 @@
   (interactive)
   (insert
    (concat "\n*** " (format-time-string "%b %d (%a)") "\n"
-           "**** todo\n"
-           "**** done\n"
-           "**** tackle-later\n"
+           "**** summary\n"
            "**** freewriting\n"
            "     " (my-date-str) "\n"
            "     \n"
@@ -1191,8 +1199,8 @@
 ; post hash of journal.org to firebase
 ; view hashes at https://journalhash.firebaseio.com/hashes.json
 
-(add-hook 'after-save-hook 'journal-hash-post)
-(add-hook 'after-revert-hook 'journal-hash-post)
+;; (add-hook 'after-save-hook 'journal-hash-post)
+;; (add-hook 'after-revert-hook 'journal-hash-post)
 
 (defun journal-hash-post ()
   (interactive) ;make it available in buffers
