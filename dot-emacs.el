@@ -902,6 +902,16 @@
     (setq org-clock-modeline-total 'current)
     ))
 
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '(
+   (sh . t)
+   (python . t)
+   (ruby . t)
+   (sqlite . t)
+   (js . t)
+   ))
+
 (message "Emacs version 23/24 check")
 (if (> emacs-major-version 23)
     (progn
