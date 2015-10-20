@@ -1306,6 +1306,7 @@
 (set 'ido-decorations '("\n-> " "" "\n   " "\n   ..." "[" "]" " [No match]"
                         " [Matched]" " [Not readable]" " [Too big]"
                         " [Confirm]"))
+(set 'frame-auto-hide-function 'delete-frame)
 (server-start)
 
 ;; apply theme to new frame
