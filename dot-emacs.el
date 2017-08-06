@@ -34,6 +34,10 @@
                      restclient
                      ox-gfm
                      haskell-mode
+                     flycheck
+                     ag
+                     projectile
+                     alchemist
                      ))
 
 (setq package-archives '(("elpa" . "http://tromey.com/elpa/")
@@ -139,7 +143,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (haskell-mode ox-gfm restclient rainbow-blocks yaml-mode js2-mode virtualenvwrapper virtualenv py-autopep8 pp-c-l magit ledger-mode key-chord jinja2-mode inf-ruby highlight-indentation highlight-chars eproject dired+ coffee-mode bookmark+ ace-jump-mode))))
+    (realgud yafolding alchemist projectile ag rjsx-mode haskell-mode ox-gfm restclient rainbow-blocks yaml-mode js2-mode virtualenvwrapper virtualenv py-autopep8 pp-c-l magit ledger-mode key-chord jinja2-mode inf-ruby highlight-indentation highlight-chars eproject dired+ coffee-mode bookmark+ ace-jump-mode))))
 
 (defun alt-colors-2 ()
   (progn
@@ -185,7 +189,7 @@
 ; http://www.emacswiki.org/cgi-bin/wiki/EmacsNiftyTricks#toc3
 (defadvice save-buffers-kill-emacs (around no-query-kill-emacs activate)
   "Prevent annoying \"Active processes exist\" query when you quit Emacs."
-  (flet ((process-list ())) ad-do-it))
+  (cl-flet ((process-list ())) ad-do-it))
 
 (fset 'yes-or-no-p 'y-or-n-p)
 
@@ -412,6 +416,19 @@
   (insert
    (format-time-string "%b %d")))
 
+(defun iso-date-str ()
+  (concat
+   (format-time-string "%Y-%m-%dT%T")
+   (concat
+    (substring (format-time-string "%z") 0 3)
+    ":"
+    (substring (format-time-string "%z") 3))))
+
+(defun isodt ()
+  (interactive)
+  (insert
+   (iso-date-str)))
+
 (define-key global-map [f3] 'my-time)
 (define-key global-map [S-f3] 'my-date)
 (define-key global-map [C-f3] 'my-just-date)
@@ -599,7 +616,7 @@
 ; make emacs fonts bigger
 ; :height 100 ===> 10px
 ; http://stackoverflow.com/questions/294664/how-to-set-the-font-size-in-emacs
-;(set-face-attribute 'default nil :height 120)
+(set-face-attribute 'default nil :height 120)
 
 ; Use a better font
 (when (string= system-name "hulk")
@@ -793,8 +810,8 @@
 ; bottom of : https://github.com/mitchellh/dotfiles/blob/master/emacs.d/modes.el
 ; thanks to : http://news.ycombinator.com/item?id=1952346
 
-(setq js-indent-level 4)
-(setq js2-basic-offset 4)
+(setq js-indent-level 2)
+(setq js2-basic-offset 2)
 (setq js2-cleanup-whitespace t)
 
 ;http://stackoverflow.com/questions/88399/how-do-i-duplicate-a-whole-line-in-emacs
@@ -811,8 +828,6 @@
 (global-set-key (kbd "C-S-f") 'duplicate-line)
 
 (global-set-key (kbd "C-S-a") 'align-regexp)
-
-(message "*****  .emacs loaded  *****")
 
 (put 'narrow-to-region 'disabled nil)
 
@@ -856,6 +871,7 @@
 (key-chord-define-global "fk" 'kill-region)
 (key-chord-define-global "zl" 'insert-console-log)
 (key-chord-define-global "zk" 'insert-js-fn)
+;(key-chord-define-global "ms" 'magit-status)
 ;(key-chord-define-global "fs" 'save-buffer)
 ;(key-chord-define-global "fb" 'ido-switch-buffer)
 
@@ -906,7 +922,6 @@
 (org-babel-do-load-languages
  'org-babel-load-languages
  '(
-   (sh . t)
    (python . t)
    (ruby . t)
    (sqlite . t)
@@ -1019,8 +1034,8 @@
 
 ; Ruby REPL
 ; https://github.com/nonsequitur/inf-ruby
-(autoload 'inf-ruby "inf-ruby" "Run an inferior Ruby process" t)
-(autoload 'inf-ruby-keys "inf-ruby" "" t)
+;(autoload 'inf-ruby "inf-ruby" "Run an inferior Ruby process" t)
+;(autoload 'inf-ruby-keys "inf-ruby" "" t)
 (eval-after-load 'ruby-mode
   '(add-hook 'ruby-mode-hook 'inf-ruby-keys))
 (inf-ruby)
@@ -1301,7 +1316,7 @@
 
 ; Tearing out the Emacs windows manager
 ; http://compsoc.man.ac.uk/~shep/tearing-out-the-emacs-window-manager.html
-(set 'pop-up-frames 'graphic-only)
+;(set 'pop-up-frames 'graphic-only) ;; disabling it until i get back on tiling wm
 (set 'gdb-use-separate-io-buffer nil)
 (set 'gdb-many-windows nil)
 (set 'mouse-autoselect-window nil)
@@ -1353,13 +1368,18 @@
 (setq ido-use-faces nil)
 (setq gc-cons-threshold 20000000)
 
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
+(add-hook 'before-save-hook
+          (lambda ()
+            (yafolding-show-all)
+            (delete-trailing-whitespace)))
 
 ;; for react ---------------------------------------------------------
 ;; http://codewinds.com/blog/2015-04-02-emacs-flycheck-eslint-jsx.html
 
 ;; use web-mode for .jsx files
-(add-to-list 'auto-mode-alist '("\\.jsx$" . web-mode))
+;; (add-to-list 'auto-mode-alist '("\\.jsx$" . web-mode))
+;; i'm using rjsx-mode instead
+
 
 ;; http://www.flycheck.org/manual/latest/index.html
 (require 'flycheck)
@@ -1407,5 +1427,64 @@
       ad-do-it)
     ad-do-it))
 
+(add-to-list 'auto-mode-alist '("\\.jsx\\'" . rjsx-mode))
+(add-to-list 'auto-mode-alist '("\\.jsx\\.erb\\'" . rjsx-mode))
+
+(with-eval-after-load 'rjsx
+  (define-key rjsx-mode-map "<" nil)
+  (define-key rjsx-mode-map (kbd "C-d") nil))
+
+
+(key-chord-define-global "z/" 'ag)
+(setq ring-bell-function 'ignore)
+
+;; https://github.com/zenozeng/yafolding.el
+(key-chord-define-global "z." 'yafolding-toggle-all)
+
+;; now i can move files like i use to with mc
+;; https://emacs.stackexchange.com/questions/5603/how-to-quickly-copy-move-file-in-emacs-dired
+(setq dired-dwim-target t)
+
+
+;; kirubakaran.com hugo helpers - begin
+;; http://www.modernemacs.com/post/org-mode-blogging/
+
+(defmacro with-dir (DIR &rest FORMS)
+  "Execute FORMS in DIR."
+  (let ((orig-dir (gensym)))
+    `(progn (setq ,orig-dir default-directory)
+            (cd ,DIR) ,@FORMS (cd ,orig-dir))))
+
+(setq hugo-dir "/home/kiru/ppp/kirubakaran.com/"
+      hugo-dir-admin "/home/kiru/ppp/kirubakaran.com/admin/"
+      hugo-process "Hugo Server"
+      sync-kirubakaran "Render Rsync Kirubakaran.com"
+      hugo-server-site "http://localhost:1313/")
+
+(defun krun ()
+  "Run hugo server if not already running and open its webpage."
+  (interactive)
+  (with-dir hugo-dir
+            (unless (get-process hugo-process)
+              (start-process hugo-process nil "hugo" "server"))
+            (browse-url hugo-server-site)))
+
+(defun kend ()
+  "End hugo server process if running."
+  (interactive)
+  (--when-let (get-process hugo-process)
+    (delete-process it)))
+
+(defun ksync ()
+  "render and rsync kirubakaran.com content to server"
+  (interactive)
+
+  (let ((default-directory hugo-dir-admin))
+    (start-process sync-kirubakaran nil
+                   (concat hugo-dir-admin "render-rsync"))))
+
+;; kirubakaran.com hugo helpers - end
+
+(message "*****  .emacs loaded  *****")
 
 ;; -------------------------------------------------------------------
