@@ -38,6 +38,7 @@
                      ag
                      projectile
                      alchemist
+                     pyenv-mode
                      ))
 
 (setq package-archives '(("elpa" . "http://tromey.com/elpa/")
@@ -143,7 +144,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (realgud yafolding alchemist projectile ag rjsx-mode haskell-mode ox-gfm restclient rainbow-blocks yaml-mode js2-mode virtualenvwrapper virtualenv py-autopep8 pp-c-l magit ledger-mode key-chord jinja2-mode inf-ruby highlight-indentation highlight-chars eproject dired+ coffee-mode bookmark+ ace-jump-mode))))
+    (pyenv-mode realgud yafolding alchemist projectile ag rjsx-mode haskell-mode ox-gfm restclient rainbow-blocks yaml-mode js2-mode virtualenvwrapper virtualenv py-autopep8 pp-c-l magit ledger-mode key-chord jinja2-mode inf-ruby highlight-indentation highlight-chars eproject dired+ coffee-mode bookmark+ ace-jump-mode))))
 
 (defun alt-colors-2 ()
   (progn
@@ -1466,7 +1467,7 @@
   (interactive)
   (with-dir hugo-dir
             (unless (get-process hugo-process)
-              (start-process hugo-process nil "hugo" "server"))
+              (start-process hugo-process nil "hugo" "--buildDrafts" "server"))
             (browse-url hugo-server-site)))
 
 (defun kend ()
