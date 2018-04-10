@@ -14,9 +14,9 @@
 
 (setq package-list '(magit
                      highlight-indentation
-                     pp-c-l
-                     dired+
-                     bookmark+
+                     ;pp-c-l
+                     ;dired+
+                     ;bookmark+
                      key-chord
                      ledger-mode
                      jinja2-mode
@@ -24,7 +24,7 @@
                      coffee-mode
                      eproject
                      py-autopep8
-                     highlight-chars
+                     ;highlight-chars
                      virtualenv
                      virtualenvwrapper
                      ace-jump-mode
@@ -41,8 +41,9 @@
                      pyenv-mode
                      ))
 
-(setq package-archives '(("elpa" . "http://tromey.com/elpa/")
-                         ("melpa" . "http://melpa.milkbox.net/packages/")))
+(setq package-archives '(("elpa" . "https://elpa.gnu.org/packages/")
+                         ("melpa" . "https://melpa.org/packages/")))
+(require 'package)
 
 ; activate all the packages (in particular autoloads)
 (package-initialize)
@@ -172,7 +173,7 @@
 (rename-buffer "dired1")
 ;(shell)
 ;(find-file (concat emacs-root ".emacs"))
-(find-file (concat emacs-root "ppp/emacs-kiru/dot-emacs.el"))
+(find-file (concat emacs-root "code/emacs-kiru/dot-emacs.el"))
 
 ; ----------------------------------------
 ; http://www.zafar.se/bkz/Articles/EmacsTips
@@ -852,10 +853,10 @@
 ;(load-file "/home/kiru/opt/dvc/++build/dvc-load.el")
 
 (setq dired-listing-switches "-alk")
-(require 'dired+)
+;(require 'dired+)
 
 (global-set-key (kbd "M-/") 'hippie-expand)
-(require 'bookmark+)
+;(require 'bookmark+)
 
 ;; (require 'google)
 ;; (setq google-license-key "ABQIAAAAX24y9sOWkGb05hZfRXyLqhQMUf-zCmQEDwv1N16oyUFq57qOsBRRq3EREDeLpkl2ki4azX9DIGjX5g" ; optional
@@ -1342,9 +1343,9 @@
 
 ; omit uninteresting files in a dired buffer with Alt-o
 ;(add-hook 'dired-load-hook '(lambda () (require 'dired-x)))
-(setq dired-omit-mode t)
-(setq dired-omit-files
-          (concat dired-omit-files "\\|API_PID-.?"))
+;(setq dired-omit-mode t)
+;(setq dired-omit-files
+;          (concat dired-omit-files "\\|API_PID-.?"))
 
 ; http://stackoverflow.com/q/11127109
 (add-hook 'after-init-hook 'my-after-init-hook)
@@ -1407,8 +1408,8 @@
 ;; https://github.com/purcell/exec-path-from-shell
 ;; only need exec-path-from-shell on OSX
 ;; this hopefully sets up path and other vars better
-(when (memq window-system '(mac ns))
-  (exec-path-from-shell-initialize))
+;(when (memq window-system '(mac ns))
+;  (exec-path-from-shell-initialize))
 
 ;; adjust indents for web-mode to 2 spaces
 (defun my-web-mode-hook ()
