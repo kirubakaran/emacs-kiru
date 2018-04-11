@@ -1487,6 +1487,14 @@
 
 ;; kirubakaran.com hugo helpers - end
 
+;; fix ag issue:
+;; (setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin"))
+(setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin"))
+
+;; "M >" doesn't work on Mac
+(key-chord-define-global "x," 'beginning-of-buffer)
+(key-chord-define-global "x." 'end-of-buffer)
+
 (message "*****  .emacs loaded  *****")
 
 ;; -------------------------------------------------------------------
