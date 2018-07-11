@@ -24,7 +24,7 @@
                      coffee-mode
                      eproject
                      py-autopep8
-                     ;highlight-chars
+                     ;highlight-chars ;;not in packages anymore. so i installed in .emacs.d
                      virtualenv
                      virtualenvwrapper
                      ace-jump-mode
@@ -39,7 +39,13 @@
                      projectile
                      alchemist
                      pyenv-mode
+                     rjsx-mode
+                     yafolding
+                     highlight
+                     use-package
                      ))
+
+(require 'highlight-chars)
 
 (setq package-archives '(("elpa" . "https://elpa.gnu.org/packages/")
                          ("melpa" . "https://melpa.org/packages/")))
@@ -145,7 +151,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (pyenv-mode realgud yafolding alchemist projectile ag rjsx-mode haskell-mode ox-gfm restclient rainbow-blocks yaml-mode js2-mode virtualenvwrapper virtualenv py-autopep8 pp-c-l magit ledger-mode key-chord jinja2-mode inf-ruby highlight-indentation highlight-chars eproject dired+ coffee-mode bookmark+ ace-jump-mode))))
+    (exec-path-from-shell use-package highlight pyenv-mode realgud yafolding alchemist projectile ag rjsx-mode haskell-mode ox-gfm restclient rainbow-blocks yaml-mode js2-mode virtualenvwrapper virtualenv py-autopep8 pp-c-l magit ledger-mode key-chord jinja2-mode inf-ruby highlight-indentation highlight-chars eproject dired+ coffee-mode bookmark+ ace-jump-mode))))
 
 (defun alt-colors-2 ()
   (progn
@@ -618,7 +624,7 @@
 ; make emacs fonts bigger
 ; :height 100 ===> 10px
 ; http://stackoverflow.com/questions/294664/how-to-set-the-font-size-in-emacs
-(set-face-attribute 'default nil :height 120)
+(set-face-attribute 'default nil :height 140)
 
 ; Use a better font
 (when (string= system-name "hulk")
@@ -815,6 +821,7 @@
 (setq js-indent-level 2)
 (setq js2-basic-offset 2)
 (setq js2-cleanup-whitespace t)
+(setq js-switch-indent-offset 2)
 
 ;http://stackoverflow.com/questions/88399/how-do-i-duplicate-a-whole-line-in-emacs
 (defun duplicate-line()
@@ -867,7 +874,7 @@
 ; http://www.emacswiki.org/emacs/download/key-chord.el
 (require 'key-chord)
 (key-chord-mode 1)
-(key-chord-define-global "xm" 'execute-extended-command)
+;(key-chord-define-global "xm" 'execute-extended-command)
 (key-chord-define-global "xo" 'other-window)
 (key-chord-define-global "xb" 'ibuffer)
 (key-chord-define-global "fk" 'kill-region)
@@ -1494,6 +1501,31 @@
 ;; "M >" doesn't work on Mac
 (key-chord-define-global "x," 'beginning-of-buffer)
 (key-chord-define-global "x." 'end-of-buffer)
+
+(setq css-indent-offset 2)
+
+;; solution for magit not recognizing git in directory
+;; https://emacs.stackexchange.com/a/32057
+;; had to install use-package first
+(use-package exec-path-from-shell
+   :if (memq window-system '(mac ns))
+   :ensure t
+   :config
+   (exec-path-from-shell-initialize))
+
+;; helm
+;; https://tuhdo.github.io/helm-intro.html
+(require 'helm)
+(require 'helm-config)
+(global-set-key (kbd "C-c h") 'helm-command-prefix)
+(global-unset-key (kbd "C-x c"))
+(global-set-key (kbd "M-y") 'helm-show-kill-ring)
+(key-chord-define-global "xm" 'helm-M-x)
+(setq helm-M-x-fuzzy-match t)
+;;(global-set-key (kbd "C-x C-f") 'helm-find-files)
+(global-set-key (kbd "C-c h o") 'helm-occur)
+(global-set-key (kbd "C-c h g") 'helm-google-suggest)
+(setq helm-exit-idle-delay 0)
 
 (message "*****  .emacs loaded  *****")
 
