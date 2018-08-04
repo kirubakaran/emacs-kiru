@@ -15,7 +15,7 @@
 (setq package-list '(magit
                      highlight-indentation
                      pp-c-l
-                     dired+
+                     ;dired+
                      bookmark+
                      key-chord
                      ledger-mode
@@ -38,14 +38,12 @@
                      ag
                      projectile
                      alchemist
-                     pyenv-mode
+                     ace-window
+                     go-mode
                      ))
 
 (setq package-archives '(("elpa" . "http://tromey.com/elpa/")
                          ("melpa" . "http://melpa.milkbox.net/packages/")))
-
-; activate all the packages (in particular autoloads)
-(package-initialize)
 
 ; fetch the list of packages available
 (unless package-archive-contents
@@ -143,8 +141,8 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   (quote
-    (pyenv-mode realgud yafolding alchemist projectile ag rjsx-mode haskell-mode ox-gfm restclient rainbow-blocks yaml-mode js2-mode virtualenvwrapper virtualenv py-autopep8 pp-c-l magit ledger-mode key-chord jinja2-mode inf-ruby highlight-indentation highlight-chars eproject dired+ coffee-mode bookmark+ ace-jump-mode))))
+   '(go-mode ace-window ag realgud yafolding alchemist projectile rjsx-mode haskell-mode ox-gfm restclient rainbow-blocks yaml-mode js2-mode virtualenvwrapper virtualenv py-autopep8 pp-c-l ledger-mode key-chord jinja2-mode inf-ruby highlight-indentation highlight-chars eproject coffee-mode bookmark+ ace-jump-mode))
+ '(tramp-syntax 'default nil (tramp)))
 
 (defun alt-colors-2 ()
   (progn
@@ -852,7 +850,7 @@
 ;(load-file "/home/kiru/opt/dvc/++build/dvc-load.el")
 
 (setq dired-listing-switches "-alk")
-(require 'dired+)
+;(require 'dired+)
 
 (global-set-key (kbd "M-/") 'hippie-expand)
 (require 'bookmark+)
@@ -866,8 +864,9 @@
 ; http://www.emacswiki.org/emacs/download/key-chord.el
 (require 'key-chord)
 (key-chord-mode 1)
-(key-chord-define-global "xm" 'execute-extended-command)
-(key-chord-define-global "xo" 'other-window)
+;(key-chord-define-global "xm" 'execute-extended-command)
+;;(key-chord-define-global "xo" 'other-window)
+(key-chord-define-global "xo" 'ace-window)
 (key-chord-define-global "xb" 'ibuffer)
 (key-chord-define-global "fk" 'kill-region)
 (key-chord-define-global "zl" 'insert-console-log)
@@ -1199,8 +1198,9 @@
   (forward-line -1)
   (indent-for-tab-command))
 
-(global-set-key (kbd "<M-return>") 'open-line-below)
-(global-set-key (kbd "<M-S-return>") 'open-line-above)
+;; (global-set-key (kbd "<M-return>") 'open-line-below)
+;; (global-set-key (kbd "<M-S-return>") 'open-line-above)
+(global-set-key (kbd "<M-S-return>") 'open-line-below)
 
 ;; easier way of renaming current buffer file
 
@@ -1369,10 +1369,11 @@
 (setq ido-use-faces nil)
 (setq gc-cons-threshold 20000000)
 
-(add-hook 'before-save-hook
-          (lambda ()
-            (yafolding-show-all)
-            (delete-trailing-whitespace)))
+;; (add-hook 'before-save-hook
+;;           (lambda ()
+;;             (yafolding-show-all)
+;;             (delete-trailing-whitespace)))
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 ;; for react ---------------------------------------------------------
 ;; http://codewinds.com/blog/2015-04-02-emacs-flycheck-eslint-jsx.html
@@ -1429,6 +1430,7 @@
     ad-do-it))
 
 (add-to-list 'auto-mode-alist '("\\.jsx\\'" . rjsx-mode))
+(add-to-list 'auto-mode-alist '("\\.es6\\'" . rjsx-mode))
 (add-to-list 'auto-mode-alist '("\\.jsx\\.erb\\'" . rjsx-mode))
 
 (with-eval-after-load 'rjsx
@@ -1485,6 +1487,30 @@
                    (concat hugo-dir-admin "render-rsync"))))
 
 ;; kirubakaran.com hugo helpers - end
+
+(require 'helm)
+(require 'helm-config)
+(helm-mode 1)
+(global-set-key (kbd "M-y") 'helm-show-kill-ring)
+
+(global-set-key (kbd "C-c h") 'helm-command-prefix)
+(global-unset-key (kbd "C-x c"))
+(key-chord-define-global "xm" 'helm-M-x)
+(setq helm-M-x-fuzzy-match t)
+;;(global-set-key (kbd "C-x C-f") 'helm-find-files)
+(global-set-key (kbd "C-c h o") 'helm-occur)
+(setq helm-exit-idle-delay 0)
+
+(setq js-switch-indent-offset 2)
+
+;; Ctrl +, or Ctrl - will change the text size.
+(global-set-key (kbd "C-+") 'text-scale-increase)
+(global-set-key (kbd "C--") 'text-scale-decrease)
+
+(key-chord-define-global "x," 'beginning-of-buffer)
+(key-chord-define-global "x." 'end-of-buffer)
+
+(add-hook 'before-save-hook #'gofmt-before-save)
 
 (message "*****  .emacs loaded  *****")
 
