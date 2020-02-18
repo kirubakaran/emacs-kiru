@@ -40,6 +40,13 @@
                      alchemist
                      ace-window
                      go-mode
+                     ;;org-brain
+                     use-package
+                     markdown-mode
+                     dart-mode
+                     py-isort
+                     dumb-jump
+                     ;lsp-mode
                      ))
 
 (setq package-archives '(("elpa" . "http://tromey.com/elpa/")
@@ -56,7 +63,7 @@
         (package-install package))))
 ; ------------------------------------------------------------
 
-(require 'cl)
+;; (require 'cl)
 
 ;(global-set-key "\C-x\C-m" 'execute-extended-command) ;use chord xm
 ;(define-key global-map [f8] 'kill-region) ;use chord fk
@@ -141,7 +148,9 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(go-mode ace-window ag realgud yafolding alchemist projectile rjsx-mode haskell-mode ox-gfm restclient rainbow-blocks yaml-mode js2-mode virtualenvwrapper virtualenv py-autopep8 pp-c-l ledger-mode key-chord jinja2-mode inf-ruby highlight-indentation highlight-chars eproject coffee-mode bookmark+ ace-jump-mode))
+   '(markdown-mode use-package
+                   ;;org-brain
+                   go-mode ace-window ag realgud yafolding alchemist projectile rjsx-mode haskell-mode ox-gfm restclient rainbow-blocks yaml-mode js2-mode virtualenvwrapper virtualenv py-autopep8 pp-c-l ledger-mode key-chord jinja2-mode inf-ruby highlight-indentation highlight-chars eproject coffee-mode bookmark+ ace-jump-mode))
  '(tramp-syntax 'default nil (tramp)))
 
 (defun alt-colors-2 ()
@@ -447,23 +456,23 @@
 (global-set-key (kbd "C-c l") 'copy-line)
 ; ---
 
-(defun totd ()
-  (interactive)
-  (random t) ;; seed with time-of-day
-  (with-output-to-temp-buffer "*Tip of the day*"
-    (let* ((commands (loop for s being the symbols
-                           when (commandp s) collect s))
-           (command (nth (random (length commands)) commands)))
-      (princ
-       (concat "Your tip for the day is:\n"
-               "========================\n\n"
-               (describe-function command)
-               "\n\nInvoke with:\n\n"
-               (with-temp-buffer
-                 (where-is command t)
-                 (buffer-string)))))))
+;; (defun totd ()
+;;   (interactive)
+;;   (random t) ;; seed with time-of-day
+;;   (with-output-to-temp-buffer "*Tip of the day*"
+;;     (let* ((commands (loop for s being the symbols
+;;                            when (commandp s) collect s))
+;;            (command (nth (random (length commands)) commands)))
+;;       (princ
+;;        (concat "Your tip for the day is:\n"
+;;                "========================\n\n"
+;;                (describe-function command)
+;;                "\n\nInvoke with:\n\n"
+;;                (with-temp-buffer
+;;                  (where-is command t)
+;;                  (buffer-string)))))))
 
-(totd)
+;; (totd)
 
 ; ------------------------------------------------------------
 ; http://mail.python.org/pipermail/python-list/2007-October/464038.html
@@ -771,14 +780,14 @@
 (setq delete-by-moving-to-trash t) ; moves file to ~/.Trash on delete
 
 (setq save-place-file "~/.emacs.d/saveplace") ;; keep my ~/ clean
-(setq-default save-place t)                   ;; activate it for all buffers
-(require 'saveplace)                          ;; get the package
+(save-place-mode 1) 
+
 
 ; http://garage.pimentech.net/libcommonDjango_django_emacs/
 ;(autoload 'django-html-mode "django-html-mode")
 (add-to-list 'auto-mode-alist '("\\.[sx]?html?\\'" . html-mode))
 
-;(add-to-list 'auto-mode-alist '("\\.[sx]?html?\\'" . jinja2-mode))
+(add-to-list 'auto-mode-alist '("\\.[sx]?html?\\'" . jinja2-mode))
 
 ;; ; start emacs server
 ;; ; http://ipython.scipy.org/doc/rel-0.9.1/html/config/initial_config.html
@@ -871,6 +880,7 @@
 (key-chord-define-global "fk" 'kill-region)
 (key-chord-define-global "zl" 'insert-console-log)
 (key-chord-define-global "zk" 'insert-js-fn)
+(key-chord-define-global "z'" 'insert-pdb-break)
 ;(key-chord-define-global "ms" 'magit-status)
 ;(key-chord-define-global "fs" 'save-buffer)
 ;(key-chord-define-global "fb" 'ido-switch-buffer)
@@ -883,6 +893,14 @@
   (insert "console.log();")
   (backward-char)
   (backward-char)
+  )
+
+(defun insert-pdb-break ()
+  "Insert pdb breakpoint"
+  (interactive)
+  (end-of-line)
+  (newline-and-indent)
+  (insert "import pdb;pdb.set_trace()")
   )
 
 (defun insert-js-fn ()
@@ -1358,7 +1376,7 @@
     (ido-everywhere 1)
     ;(flx-ido-mode 1)
     ;(pretty-control-l-mode 1)
-    (define-key magit-status-mode-map (kbd "q") 'magit-quit-session)
+    ; (define-key magit-status-mode-map (kbd "q") 'magit-quit-session)
     (define-project-type rails (generic)
       (or (look-for "Gemfile"))
       :relevant-files ("\.rb$" "\.js$" "\.css$"))
@@ -1511,6 +1529,57 @@
 (key-chord-define-global "x." 'end-of-buffer)
 
 (add-hook 'before-save-hook #'gofmt-before-save)
+
+(require 'use-package)
+;; (use-package org-brain :ensure t
+;;   :init
+;;   (setq org-brain-path "/home/kiru/ppp/learn/tstbrain/")
+;;   :config
+;;   (setq org-id-track-globally t)
+;;   (setq org-id-locations-file "~/.emacs.d/.org-id-locations")
+;;   (push '("b" "Brain" plain (function org-brain-goto-end)
+;;           "* %i%?" :empty-lines 1)
+;;         org-capture-templates)
+;;   (setq org-brain-visualize-default-choices 'all)
+;;   (setq org-brain-title-max-length 12))
+
+;; (load "/home/kiru/opt/org-mind-map.el")
+;; (load "/home/kiru/.emacs.d/ox-freemind.el")
+
+;; (defun save-and-export-mindmap ()
+;;   "Helper to save current org file and export as mindmap."
+;;   (interactive)
+
+;;   (save-buffer)
+;;   (setq org-mind-map-dot-output '("pdf"))
+;;   (org-mind-map-write)
+;;   (setq org-mind-map-dot-output '("pdf" "png" "jpeg" "svg" "eps" "gif" "tiff"))
+;;   )
+;; (key-chord-define-global "zp" 'save-and-export-mindmap)
+
+(require 'lsp-mode)
+(setenv "PATH" (concat (getenv "PATH") ":/usr/lib/dart/bin/"))
+(setq exec-path (append exec-path '("/usr/lib/dart/bin/")))
+(setq lsp-print-io t)
+
+;; M-x shell will pick up .bashrc
+;; https://stackoverflow.com/a/42036157
+(setq shell-command-switch "-ic")
+
+;; https://oremacs.com/2015/01/01/three-ansi-term-tips/
+(eval-after-load "term"
+  '(define-key term-raw-map (kbd "C-c C-y") 'term-paste))
+
+(require 'flymake-python-pyflakes)
+(add-hook 'python-mode-hook 'flymake-python-pyflakes-load)
+(add-hook 'python-mode-hook 'flymake-mode)
+(setq flymake-python-pyflakes-executable "flake8")
+
+(setq exec-path (append exec-path '("/home/kiru/opt/anaconda3/bin/")))
+(require 'py-isort)
+(add-hook 'before-save-hook 'py-isort-before-save)
+
+(dumb-jump-mode)
 
 (message "*****  .emacs loaded  *****")
 
